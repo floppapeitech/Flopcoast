@@ -1,19 +1,34 @@
 
 import { User, Flight, FlightResult } from '../types';
 
+// Updated Strict Fleet Database
+const FLEET = {
+  A350_1000: 'Airbus A350-1000',
+  A350_900: 'Airbus A350-900',
+  A330neo: 'Airbus A330neo-900',
+  A380: 'Airbus A380-800',
+  A321neo: 'Airbus A321neo',
+  B787_9: 'Boeing 787-9 Dreamliner',
+  B787_10: 'Boeing 787-10 Dreamliner',
+  B787_8: 'Boeing 787-8 Dreamliner',
+  B777_300ER: 'Boeing 777-300ER'
+};
+
 export const INITIAL_FLIGHTS: Flight[] = [
   {
     id: 'f1',
     flightNumber: 'FC-101',
     origin: 'New York (JFK)',
     destination: 'London (LHR)',
-    departureTime: new Date(new Date().setDate(new Date().getDate() + 2)).toISOString(), // 2 days from now
+    departureTime: new Date(new Date().setDate(new Date().getDate() + 2)).toISOString(),
     arrivalTime: new Date(new Date().setDate(new Date().getDate() + 2) + 7 * 60 * 60 * 1000).toISOString(),
     gate: 'B12',
+    terminal: '4',
     seat: '4A',
     class: 'Business',
     status: 'On Time',
-    aircraft: 'Boeing 787-9',
+    aircraft: FLEET.A350_1000,
+    bookingReference: 'FL-883921',
     alerts: {
       priceChange: false,
       statusUpdate: true
@@ -27,16 +42,23 @@ export const INITIAL_FLIGHTS: Flight[] = [
     departureTime: new Date(new Date().setDate(new Date().getDate() + 10)).toISOString(),
     arrivalTime: new Date(new Date().setDate(new Date().getDate() + 10) + 14 * 60 * 60 * 1000).toISOString(),
     gate: 'A05',
+    terminal: '5',
     seat: '12F',
     class: 'Economy',
     status: 'Delayed',
-    aircraft: 'Airbus A350-1000',
+    aircraft: FLEET.A380,
+    bookingReference: 'FL-992001',
     alerts: {
       priceChange: true,
       statusUpdate: true
     }
   }
 ];
+
+// Helper to generate flights
+const generateFlight = (id: string, airline: string, num: string, origin: string, dest: string, depTime: string, arrTime: string, dur: string, price: number, aircraft: string): FlightResult => ({
+    id, airline, flightNumber: num, origin, destination: dest, departureTime: depTime, arrivalTime: arrTime, duration: dur, stops: 0, price, aircraft, baggage: '1x 23kg Checked', amenities: ['WiFi', 'Meals'], cabinClass: 'Economy', priceTrend: 'stable'
+});
 
 export const MOCK_SEARCH_RESULTS: FlightResult[] = [
   // JFK -> LHR
@@ -51,7 +73,7 @@ export const MOCK_SEARCH_RESULTS: FlightResult[] = [
     duration: '7h 00m',
     stops: 0,
     price: 450,
-    aircraft: 'Boeing 787-9',
+    aircraft: FLEET.A350_1000,
     baggage: '2x 23kg Checked',
     amenities: ['WiFi', 'Meals', 'USB Power', 'On-demand TV'],
     cabinClass: 'Economy',
@@ -68,7 +90,7 @@ export const MOCK_SEARCH_RESULTS: FlightResult[] = [
     duration: '7h 00m',
     stops: 0,
     price: 1250,
-    aircraft: 'Boeing 777-300ER',
+    aircraft: FLEET.B777_300ER,
     baggage: '2x 32kg Checked',
     amenities: ['Meals', 'USB Power', 'On-demand TV', 'Lounge Access'],
     cabinClass: 'Premium Economy',
@@ -85,7 +107,7 @@ export const MOCK_SEARCH_RESULTS: FlightResult[] = [
     duration: '9h 00m',
     stops: 1,
     price: 380,
-    aircraft: 'Airbus A321XLR',
+    aircraft: FLEET.A330neo,
     baggage: 'Cabin Bag Only',
     amenities: ['USB Power', 'Stream to Device'],
     cabinClass: 'Economy',
@@ -104,7 +126,7 @@ export const MOCK_SEARCH_RESULTS: FlightResult[] = [
     duration: '15h 00m',
     stops: 0,
     price: 1200,
-    aircraft: 'Boeing 787-9',
+    aircraft: FLEET.A350_900,
     baggage: '2x 23kg Checked',
     amenities: ['WiFi', 'Meals', 'Snacks', 'Sleep Kit'],
     cabinClass: 'Economy',
@@ -122,7 +144,7 @@ export const MOCK_SEARCH_RESULTS: FlightResult[] = [
     duration: '7h 00m',
     stops: 0,
     price: 480,
-    aircraft: 'Boeing 787-10',
+    aircraft: FLEET.B787_10,
     baggage: '1x 30kg Checked',
     amenities: ['WiFi', 'Asian Meal Options', 'Power'],
     cabinClass: 'Economy',
@@ -140,7 +162,7 @@ export const MOCK_SEARCH_RESULTS: FlightResult[] = [
     duration: '10h 00m',
     stops: 0,
     price: 850,
-    aircraft: 'Boeing 777-200LR',
+    aircraft: FLEET.A330neo,
     baggage: '2x 32kg Checked',
     amenities: ['WiFi', 'Hot Meals', 'Pillow/Blanket'],
     cabinClass: 'Economy',
@@ -158,7 +180,7 @@ export const MOCK_SEARCH_RESULTS: FlightResult[] = [
     duration: '6h 00m',
     stops: 0,
     price: 350,
-    aircraft: 'Airbus A330-300',
+    aircraft: FLEET.A330neo,
     baggage: '1x 25kg Checked',
     amenities: ['WiFi', 'Meal', 'Entertainment'],
     cabinClass: 'Economy',
@@ -176,7 +198,7 @@ export const MOCK_SEARCH_RESULTS: FlightResult[] = [
     duration: '4h 00m',
     stops: 0,
     price: 220,
-    aircraft: 'Airbus A320neo',
+    aircraft: FLEET.A321neo,
     baggage: '1x 23kg Checked',
     amenities: ['USB Power', 'Snack'],
     cabinClass: 'Economy',
@@ -194,15 +216,14 @@ export const MOCK_SEARCH_RESULTS: FlightResult[] = [
     duration: '9h 00m',
     stops: 0,
     price: 600,
-    aircraft: 'Boeing 787-8',
+    aircraft: FLEET.B787_8,
     baggage: '2x 23kg Checked',
     amenities: ['WiFi', 'Full Meal', 'Blanket'],
     cabinClass: 'Economy',
     priceTrend: 'down'
   },
   
-  // --- EXISTING FICTIONAL ROUTES ---
-  // Floptopia (FLP) <-> Queen Jiafei (JLU)
+  // Fictional & Short Haul Routes
   {
     id: 'sr12',
     airline: 'Flopcoast Airways',
@@ -214,13 +235,12 @@ export const MOCK_SEARCH_RESULTS: FlightResult[] = [
     duration: '3h 30m',
     stops: 0,
     price: 320,
-    aircraft: 'Airbus A320neo',
+    aircraft: FLEET.A321neo,
     baggage: '1x 23kg Checked',
     amenities: ['WiFi', 'Snacks', 'USB Power'],
     cabinClass: 'Economy',
     priceTrend: 'stable'
   },
-  // Manipple (MAY) <-> Alejandra Coast (AJC)
   {
     id: 'sr13',
     airline: 'Flopcoast Airways',
@@ -232,364 +252,68 @@ export const MOCK_SEARCH_RESULTS: FlightResult[] = [
     duration: '2h 00m',
     stops: 0,
     price: 180,
-    aircraft: 'Boeing 737-800',
+    aircraft: FLEET.A321neo,
     baggage: 'Cabin Bag Only',
     amenities: ['USB Power', 'Beverage Service'],
     cabinClass: 'Economy',
     priceTrend: 'up'
   },
-   // Erendits (ERD) <-> Jilu City (JLC)
-   {
-    id: 'sr14',
-    airline: 'Flopcoast Airways',
-    flightNumber: 'FC-789',
-    origin: 'Erendits (ERD)',
-    destination: 'Jilu City (JLC)',
-    departureTime: '08:45',
-    arrivalTime: '10:15',
-    duration: '1h 30m',
-    stops: 0,
-    price: 150,
-    aircraft: 'Embraer E190',
-    baggage: '1x 23kg Checked',
-    amenities: ['No WiFi', 'Snacks'],
-    cabinClass: 'Economy',
-    priceTrend: 'down'
-  },
-  // Poosay Bottom (PBT) <-> Summeria (XSX)
-  {
-    id: 'sr15',
-    airline: 'Flopcoast Express',
-    flightNumber: 'FC-001',
-    origin: 'Poosay Bottom (PBT)',
-    destination: 'Summeria (XSX)',
-    departureTime: '16:20',
-    arrivalTime: '19:40',
-    duration: '3h 20m',
-    stops: 0,
-    price: 290,
-    aircraft: 'Airbus A220',
-    baggage: '1x 23kg Checked',
-    amenities: ['WiFi', 'Power', 'Drinks'],
-    cabinClass: 'Economy',
-    priceTrend: 'stable'
-  },
-  // Da Hood (DHR) <-> New York (JFK)
-  {
-    id: 'sr16',
-    airline: 'Flopcoast Airways',
-    flightNumber: 'FC-420',
-    origin: 'Da Hood (DHR)',
-    destination: 'New York (JFK)',
-    departureTime: '23:00',
-    arrivalTime: '05:00',
-    duration: '6h 00m',
-    stops: 0,
-    price: 400,
-    aircraft: 'Boeing 757-200',
-    baggage: '2x 23kg Checked',
-    amenities: ['WiFi', 'Full Meal'],
-    cabinClass: 'Economy',
-    priceTrend: 'up'
-  },
-  // Queen Jiafei (JLU) -> Floptopia (FLP) - Premium
-  {
-    id: 'sr17',
-    airline: 'Flopcoast Airways',
-    flightNumber: 'FC-667',
-    origin: 'Queen Jiafei (JLU)',
-    destination: 'Floptopia (FLP)',
-    departureTime: '18:00',
-    arrivalTime: '21:30',
-    duration: '3h 30m',
-    stops: 0,
-    price: 850,
-    aircraft: 'Airbus A320neo',
-    baggage: '2x 32kg Checked',
-    amenities: ['WiFi', 'Gourmet Meal', 'Priority Boarding'],
-    cabinClass: 'Business',
-    priceTrend: 'stable'
-  },
-  // NEW ASIAN ROUTES
-  {
-    id: 'sr25',
-    airline: 'Flopcoast Asia',
-    flightNumber: 'FC-808',
-    origin: 'Tokyo (HND)',
-    destination: 'Beijing (PEK)',
-    departureTime: '14:00',
-    arrivalTime: '17:00',
-    duration: '4h 00m',
-    stops: 0,
-    price: 320,
-    aircraft: 'Boeing 787-8',
-    baggage: '1x 23kg Checked',
-    amenities: ['WiFi', 'Meal'],
-    cabinClass: 'Economy',
-    priceTrend: 'down'
-  },
-  {
-    id: 'sr26',
-    airline: 'Flopcoast Asia',
-    flightNumber: 'FC-809',
-    origin: 'Singapore (SIN)',
-    destination: 'Mumbai (BOM)',
-    departureTime: '18:30',
-    arrivalTime: '21:30',
-    duration: '5h 30m',
-    stops: 0,
-    price: 410,
-    aircraft: 'Airbus A350-900',
-    baggage: '2x 23kg Checked',
-    amenities: ['WiFi', 'Indian Meal Options', 'Power'],
-    cabinClass: 'Economy',
-    priceTrend: 'stable'
-  },
-  {
-    id: 'sr27',
-    airline: 'Flopcoast Airways',
-    flightNumber: 'FC-810',
-    origin: 'Hong Kong (HKG)',
-    destination: 'London (LHR)',
-    departureTime: '23:00',
-    arrivalTime: '05:00',
-    duration: '13h 00m',
-    stops: 0,
-    price: 890,
-    aircraft: 'Boeing 777-300ER',
-    baggage: '2x 23kg Checked',
-    amenities: ['WiFi', 'Full Meal Service', 'Entertainment'],
-    cabinClass: 'Economy',
-    priceTrend: 'up'
-  },
-  {
-    id: 'sr28',
-    airline: 'Flopcoast Asia',
-    flightNumber: 'FC-811',
-    origin: 'Shanghai (PVG)',
-    destination: 'Tokyo (HND)',
-    departureTime: '09:00',
-    arrivalTime: '13:00',
-    duration: '3h 00m',
-    stops: 0,
-    price: 280,
-    aircraft: 'Airbus A330-300',
-    baggage: '1x 23kg Checked',
-    amenities: ['Snack', 'USB Power'],
-    cabinClass: 'Economy',
-    priceTrend: 'stable'
-  },
-  // NEW SOUTH AMERICAN ROUTES
-  {
-    id: 'sr30',
-    airline: 'Flopcoast Americas',
-    flightNumber: 'FC-950',
-    origin: 'Sao Paulo (GRU)',
-    destination: 'Rio de Janeiro (GIG)',
-    departureTime: '07:00',
-    arrivalTime: '08:00',
-    duration: '1h 00m',
-    stops: 0,
-    price: 120,
-    aircraft: 'Embraer E195-E2',
-    baggage: '1x 23kg Checked',
-    amenities: ['Snack'],
-    cabinClass: 'Economy',
-    priceTrend: 'stable'
-  },
-  {
-    id: 'sr31',
-    airline: 'Flopcoast Americas',
-    flightNumber: 'FC-951',
-    origin: 'Lima (LIM)',
-    destination: 'Cusco (CUZ)',
-    departureTime: '06:00',
-    arrivalTime: '07:20',
-    duration: '1h 20m',
-    stops: 0,
-    price: 150,
-    aircraft: 'Airbus A319',
-    baggage: '1x 23kg Checked',
-    amenities: ['Beverage'],
-    cabinClass: 'Economy',
-    priceTrend: 'up'
-  },
   
-  // --- NEW: AFRICA ROUTES ---
-  {
-    id: 'sr40',
-    airline: 'Flopcoast Africa',
-    flightNumber: 'FC-1001',
-    origin: 'London (LHR)',
-    destination: 'Johannesburg (JNB)',
-    departureTime: '19:00',
-    arrivalTime: '07:00',
-    duration: '11h 00m',
-    stops: 0,
-    price: 950,
-    aircraft: 'Airbus A380-800',
-    baggage: '2x 23kg Checked',
-    amenities: ['WiFi', 'Full Meals', 'Entertainment'],
-    cabinClass: 'Economy',
-    priceTrend: 'down'
-  },
-  {
-    id: 'sr41',
-    airline: 'Flopcoast Africa',
-    flightNumber: 'FC-1005',
-    origin: 'Cairo (CAI)',
-    destination: 'Dubai (DXB)',
-    departureTime: '14:00',
-    arrivalTime: '19:30',
-    duration: '3h 30m',
-    stops: 0,
-    price: 320,
-    aircraft: 'Boeing 737 MAX 8',
-    baggage: '1x 23kg Checked',
-    amenities: ['WiFi', 'Meal'],
-    cabinClass: 'Economy',
-    priceTrend: 'stable'
-  },
-  {
-    id: 'sr42',
-    airline: 'Flopcoast Africa',
-    flightNumber: 'FC-1010',
-    origin: 'Lagos (LOS)',
-    destination: 'London (LHR)',
-    departureTime: '22:45',
-    arrivalTime: '05:15',
-    duration: '6h 30m',
-    stops: 0,
-    price: 780,
-    aircraft: 'Boeing 787-9',
-    baggage: '2x 32kg Checked',
-    amenities: ['WiFi', 'Dinner', 'Breakfast'],
-    cabinClass: 'Business',
-    priceTrend: 'up'
-  },
+  // NEW INTERNATIONAL ROUTES
+  generateFlight('nf1', 'Flopcoast Asia', 'FC-820', 'Tokyo (HND)', 'Istanbul (IST)', '08:00', '16:30', '12h 30m', 700, FLEET.B787_9),
+  generateFlight('nf2', 'Flopcoast Asia', 'FC-821', 'Istanbul (IST)', 'Tokyo (HND)', '12:00', '06:00', '11h 00m', 700, FLEET.B787_9),
+  generateFlight('nf3', 'Flopcoast Asia', 'FC-822', 'Beijing (PEK)', 'Doha (DOH)', '09:00', '14:15', '9h 15m', 650, FLEET.A350_900),
+  generateFlight('nf4', 'Flopcoast Asia', 'FC-823', 'Doha (DOH)', 'Beijing (PEK)', '16:00', '05:00', '8h 00m', 650, FLEET.A350_900),
+  
+  // Flagship Routes
+  generateFlight('nf41', 'Flopcoast Airways', 'FC-005', 'London (LHR)', 'Singapore (SIN)', '22:00', '18:00', '13h 00m', 900, FLEET.A380),
+  generateFlight('nf42', 'Flopcoast Airways', 'FC-006', 'Singapore (SIN)', 'London (LHR)', '23:30', '05:55', '13h 25m', 900, FLEET.A380),
+  generateFlight('nf45', 'Flopcoast Airways', 'FC-009', 'New York (JFK)', 'Dubai (DXB)', '10:00', '07:00', '13h 00m', 950, FLEET.A380),
+  generateFlight('nf46', 'Flopcoast Airways', 'FC-010', 'Dubai (DXB)', 'New York (JFK)', '02:00', '08:00', '14h 00m', 950, FLEET.A380),
+  generateFlight('nf47', 'Flopcoast Airways', 'FC-011', 'Sao Paulo (GRU)', 'Paris (CDG)', '18:00', '10:00', '11h 00m', 800, FLEET.A350_1000),
+  
+  // More Connections
+  generateFlight('nf53', 'Flopcoast Europe', 'FC-2050', 'Madrid (MAD)', 'Buenos Aires (EZE)', '23:00', '07:30', '12h 30m', 820, FLEET.A350_900),
+  generateFlight('nf54', 'Flopcoast Pacific', 'FC-3020', 'Sydney (SYD)', 'San Francisco (SFO)', '10:00', '06:00', '14h 00m', 1100, FLEET.B777_300ER),
+  generateFlight('nf55', 'Flopcoast Pacific', 'FC-3021', 'San Francisco (SFO)', 'Sydney (SYD)', '22:00', '07:00', '15h 00m', 1100, FLEET.B777_300ER),
+  
+  // New Expanded European Routes
+  generateFlight('nf60', 'Flopcoast Europe', 'FC-501', 'London (LHR)', 'Amsterdam (AMS)', '07:00', '09:15', '1h 15m', 150, FLEET.A321neo),
+  generateFlight('nf61', 'Flopcoast Europe', 'FC-502', 'Amsterdam (AMS)', 'Frankfurt (FRA)', '10:30', '11:45', '1h 15m', 160, FLEET.A321neo),
+  generateFlight('nf62', 'Flopcoast Europe', 'FC-503', 'Frankfurt (FRA)', 'Zurich (ZRH)', '13:00', '14:00', '1h 00m', 140, FLEET.A321neo),
+  generateFlight('nf63', 'Flopcoast Europe', 'FC-504', 'Madrid (MAD)', 'Barcelona (BCN)', '09:00', '10:15', '1h 15m', 120, FLEET.A321neo),
+  
+  // New Expanded American Routes
+  generateFlight('nf70', 'Flopcoast Americas', 'FC-601', 'New York (JFK)', 'Atlanta (ATL)', '08:00', '10:30', '2h 30m', 200, FLEET.B787_8),
+  generateFlight('nf71', 'Flopcoast Americas', 'FC-602', 'Atlanta (ATL)', 'Dallas (DFW)', '12:00', '13:30', '2h 30m', 180, FLEET.B787_8),
+  generateFlight('nf72', 'Flopcoast Americas', 'FC-603', 'Dallas (DFW)', 'Denver (DEN)', '15:00', '16:30', '2h 30m', 220, FLEET.A321neo),
+  generateFlight('nf73', 'Flopcoast Americas', 'FC-604', 'Denver (DEN)', 'Seattle (SEA)', '18:00', '20:00', '3h 00m', 250, FLEET.A321neo),
+  
+  // New Expanded Asian Routes
+  generateFlight('nf80', 'Flopcoast Asia', 'FC-701', 'Mumbai (BOM)', 'Delhi (DEL)', '06:00', '08:15', '2h 15m', 120, FLEET.A321neo),
+  generateFlight('nf81', 'Flopcoast Asia', 'FC-702', 'Singapore (SIN)', 'Mumbai (BOM)', '14:00', '17:00', '5h 30m', 400, FLEET.A330neo),
+  
+  // New Oceania Routes
+  generateFlight('nf90', 'Flopcoast Pacific', 'FC-901', 'Sydney (SYD)', 'Auckland (AKL)', '10:00', '15:00', '3h 00m', 300, FLEET.B787_9),
+  generateFlight('nf91', 'Flopcoast Pacific', 'FC-902', 'Sydney (SYD)', 'Melbourne (MEL)', '08:00', '09:30', '1h 30m', 150, FLEET.B787_9),
+  
+  // New African Routes
+  generateFlight('nf100', 'Flopcoast Africa', 'FC-1001', 'Paris (CDG)', 'Casablanca (CMN)', '12:00', '14:30', '3h 30m', 300, FLEET.A330neo),
+  generateFlight('nf101', 'Flopcoast Africa', 'FC-1002', 'Dubai (DXB)', 'Addis Ababa (ADD)', '10:00', '13:30', '4h 30m', 450, FLEET.B787_8),
 
-  // --- NEW: EUROPE ROUTES ---
-  {
-    id: 'sr50',
-    airline: 'Flopcoast Europe',
-    flightNumber: 'FC-2020',
-    origin: 'Paris (CDG)',
-    destination: 'New York (JFK)',
-    departureTime: '13:00',
-    arrivalTime: '15:30',
-    duration: '8h 30m',
-    stops: 0,
-    price: 540,
-    aircraft: 'Airbus A350-900',
-    baggage: '1x 23kg Checked',
-    amenities: ['WiFi', 'French Cuisine', 'Wine'],
-    cabinClass: 'Economy',
-    priceTrend: 'stable'
-  },
-  {
-    id: 'sr51',
-    airline: 'Flopcoast Europe',
-    flightNumber: 'FC-2030',
-    origin: 'Berlin (BER)',
-    destination: 'London (LHR)',
-    departureTime: '08:00',
-    arrivalTime: '09:00',
-    duration: '2h 00m',
-    stops: 0,
-    price: 120,
-    aircraft: 'Airbus A320',
-    baggage: 'Cabin Bag Only',
-    amenities: ['Snack'],
-    cabinClass: 'Economy',
-    priceTrend: 'down'
-  },
-  {
-    id: 'sr52',
-    airline: 'Flopcoast Europe',
-    flightNumber: 'FC-2040',
-    origin: 'Rome (FCO)',
-    destination: 'New York (JFK)',
-    departureTime: '11:00',
-    arrivalTime: '14:30',
-    duration: '9h 30m',
-    stops: 0,
-    price: 600,
-    aircraft: 'Boeing 777-200',
-    baggage: '2x 23kg Checked',
-    amenities: ['WiFi', 'Italian Meals'],
-    cabinClass: 'Economy',
-    priceTrend: 'up'
-  },
-  {
-    id: 'sr53',
-    airline: 'Flopcoast Europe',
-    flightNumber: 'FC-2050',
-    origin: 'Madrid (MAD)',
-    destination: 'Bogota (BOG)',
-    departureTime: '16:00',
-    arrivalTime: '20:30',
-    duration: '10h 30m',
-    stops: 0,
-    price: 720,
-    aircraft: 'Boeing 787-8',
-    baggage: '2x 23kg Checked',
-    amenities: ['WiFi', 'Meals', 'Entertainment'],
-    cabinClass: 'Economy',
-    priceTrend: 'stable'
-  },
-
-  // --- NEW: NORTH AMERICA ROUTES ---
-  {
-    id: 'sr60',
-    airline: 'Flopcoast Americas',
-    flightNumber: 'FC-3001',
-    origin: 'Toronto (YYZ)',
-    destination: 'London (LHR)',
-    departureTime: '19:30',
-    arrivalTime: '07:30',
-    duration: '7h 00m',
-    stops: 0,
-    price: 580,
-    aircraft: 'Boeing 787-9',
-    baggage: '1x 23kg Checked',
-    amenities: ['WiFi', 'Meal', 'USB Power'],
-    cabinClass: 'Economy',
-    priceTrend: 'down'
-  },
-  {
-    id: 'sr61',
-    airline: 'Flopcoast Americas',
-    flightNumber: 'FC-3010',
-    origin: 'Mexico City (MEX)',
-    destination: 'Los Angeles (LAX)',
-    departureTime: '09:00',
-    arrivalTime: '11:00',
-    duration: '4h 00m',
-    stops: 0,
-    price: 250,
-    aircraft: 'Boeing 737 MAX 8',
-    baggage: '1x 23kg Checked',
-    amenities: ['Snack', 'WiFi'],
-    cabinClass: 'Economy',
-    priceTrend: 'stable'
-  },
-  {
-    id: 'sr62',
-    airline: 'Flopcoast Americas',
-    flightNumber: 'FC-3020',
-    origin: 'Chicago (ORD)',
-    destination: 'London (LHR)',
-    departureTime: '17:00',
-    arrivalTime: '06:00',
-    duration: '8h 00m',
-    stops: 0,
-    price: 620,
-    aircraft: 'Boeing 767-300',
-    baggage: '1x 23kg Checked',
-    amenities: ['Meal', 'WiFi'],
-    cabinClass: 'Economy',
-    priceTrend: 'up'
-  }
+  // --- NEW ADDITIONAL ROUTES FOR EXPANSION ---
+  generateFlight('nf200', 'Flopcoast Europe', 'FC-1500', 'London (LHR)', 'Manchester (MAN)', '09:00', '10:00', '1h 00m', 100, FLEET.A321neo),
+  generateFlight('nf201', 'Flopcoast Europe', 'FC-1501', 'Amsterdam (AMS)', 'Brussels (BRU)', '14:00', '14:45', '0h 45m', 90, FLEET.A321neo),
+  generateFlight('nf202', 'Flopcoast Europe', 'FC-1502', 'Zurich (ZRH)', 'Geneva (GVA)', '11:00', '11:50', '0h 50m', 110, FLEET.A321neo),
+  generateFlight('nf203', 'Flopcoast Europe', 'FC-1503', 'Berlin (BER)', 'Warsaw (WAW)', '13:00', '14:15', '1h 15m', 130, FLEET.A321neo),
+  generateFlight('nf204', 'Flopcoast Europe', 'FC-1504', 'Frankfurt (FRA)', 'Prague (PRG)', '16:00', '17:00', '1h 00m', 120, FLEET.A321neo),
+  generateFlight('nf205', 'Flopcoast Asia', 'FC-1600', 'Hong Kong (HKG)', 'Taipei (TPE)', '10:00', '11:45', '1h 45m', 180, FLEET.A330neo),
+  generateFlight('nf206', 'Flopcoast Asia', 'FC-1601', 'Singapore (SIN)', 'Jakarta (CGK)', '19:00', '19:50', '1h 50m', 150, FLEET.B787_8),
+  generateFlight('nf207', 'Flopcoast Asia', 'FC-1602', 'Hong Kong (HKG)', 'Manila (MNL)', '08:00', '10:15', '2h 15m', 200, FLEET.A321neo),
+  generateFlight('nf208', 'Flopcoast Pacific', 'FC-1700', 'Melbourne (MEL)', 'Perth (PER)', '12:00', '14:15', '4h 15m', 350, FLEET.B787_9),
+  generateFlight('nf209', 'Flopcoast Pacific', 'FC-1701', 'Auckland (AKL)', 'Christchurch (CHC)', '15:00', '16:20', '1h 20m', 120, FLEET.A321neo),
+  generateFlight('nf210', 'Flopcoast Americas', 'FC-1800', 'New York (JFK)', 'Boston (BOS)', '07:00', '08:15', '1h 15m', 110, FLEET.A321neo),
+  generateFlight('nf211', 'Flopcoast Americas', 'FC-1801', 'Toronto (YYZ)', 'Montreal (YUL)', '10:00', '11:15', '1h 15m', 120, FLEET.A321neo),
 ];
 
 export const INITIAL_USERS: User[] = [
@@ -600,7 +324,8 @@ export const INITIAL_USERS: User[] = [
     role: 'ADMIN',
     awardsTier: 'Ultimate',
     awardsPoints: 150000,
-    upcomingFlights: [] 
+    upcomingFlights: [],
+    avatarUrl: ''
   },
   {
     id: 'u2',
@@ -609,6 +334,7 @@ export const INITIAL_USERS: User[] = [
     role: 'USER',
     awardsTier: 'Gold',
     awardsPoints: 45200,
-    upcomingFlights: INITIAL_FLIGHTS
+    upcomingFlights: INITIAL_FLIGHTS,
+    avatarUrl: ''
   }
 ];

@@ -8,9 +8,14 @@ export interface Flight {
   arrivalTime: string; // ISO string
   gate: string;
   seat: string;
-  class: 'Economy' | 'Business' | 'First';
+  class: 'Economy' | 'Premium Economy' | 'Business' | 'First Class';
   status: 'On Time' | 'Delayed' | 'Boarding' | 'Departed';
   aircraft: string;
+  bookingReference?: string;
+  terminal?: string;
+  baggageClaim?: string;
+  meals?: string;
+  entertainment?: string;
   alerts?: {
     priceChange: boolean;
     statusUpdate: boolean;
@@ -44,9 +49,10 @@ export interface User {
   awardsTier: 'Basic' | 'Silver' | 'Gold' | 'Platinum' | 'Ultimate';
   awardsPoints: number;
   upcomingFlights: Flight[];
+  avatarUrl?: string;
 }
 
-export type ViewState = 'HOME' | 'FLIGHT_RESULTS' | 'DASHBOARD' | 'ADMIN' | 'ABOUT' | 'HELP' | 'REWARDS';
+export type ViewState = 'HOME' | 'FLIGHT_RESULTS' | 'DASHBOARD' | 'ADMIN' | 'ABOUT' | 'HELP' | 'REWARDS' | 'REWARDS_CENTER' | 'SETTINGS' | 'INSURANCE' | 'INSURANCE_FULL_POLICY' | 'ONBOARD' | 'CHECKIN' | 'BAGGAGE' | 'FLEET';
 
 export interface BookingFormData {
   from: string;

@@ -36,8 +36,8 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <ul className="space-y-4">
               <FooterLink href="#" onClick={() => onNavigate?.('HOME')}>Destinations</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('REWARDS')}>Rewards Program</FooterLink>
-              <FooterLink href="#">Travel Experience</FooterLink>
-              <FooterLink href="#">Lounges</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('ONBOARD')}>Onboard Experience</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('FLEET')}>Our Fleet</FooterLink>
             </ul>
           </div>
 
@@ -57,9 +57,9 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <h4 className="font-display font-semibold text-lg mb-6">Support</h4>
             <ul className="space-y-4">
               <FooterLink href="#" onClick={() => onNavigate?.('HELP')}>Help Center</FooterLink>
-              <FooterLink href="#">Contact Us</FooterLink>
-              <FooterLink href="#">Baggage Information</FooterLink>
-              <FooterLink href="#">Special Assistance</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('INSURANCE')}>Flopcoast Insurance</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('CHECKIN')}>Check-in Guide</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('BAGGAGE')}>Baggage Info</FooterLink>
             </ul>
           </div>
         </div>
@@ -70,7 +70,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
              <Globe size={16} />
              <span>English (US)</span>
           </div>
-          <div className="flex gap-8 text-sm text-silver-500 dark:text-silver-400">
+          <div className="flex gap-8 text-sm text-silver-500 dark:text-silver-400 flex-wrap justify-center">
             <a href="#" className="hover:text-black dark:hover:text-white transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-black dark:hover:text-white transition-colors">Terms of Service</a>
             <a href="#" className="hover:text-black dark:hover:text-white transition-colors">Accessibility</a>

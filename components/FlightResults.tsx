@@ -1,12 +1,13 @@
 
-import React, { useState, useEffect } from 'react';
-import { FlightResult, SearchCriteria } from '../types';
-import { Filter, ArrowLeft, Check, ShieldCheck, Plane, X, Info, Clock, Building, RotateCcw, Luggage, Wifi, Coffee, Zap, Tv, Armchair, Columns, ChevronDown, ChevronUp, ArrowUpRight, ArrowDownRight, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { FlightResult, SearchCriteria, User } from '../types';
+import { Filter, ArrowLeft, Check, ShieldCheck, Plane, X, Info, Clock, Building, RotateCcw, Luggage, Wifi, Coffee, Zap, Tv, Armchair, Columns, ChevronDown, ChevronUp, ArrowUpRight, ArrowDownRight, ArrowRight, Award } from 'lucide-react';
 import { MOCK_SEARCH_RESULTS } from '../services/mockData';
 
 interface FlightResultsProps {
   criteria: SearchCriteria;
   onBack: () => void;
+  user: User | null;
 }
 
 type StopsFilter = 'all' | '0' | '1' | '2+';
@@ -15,7 +16,7 @@ type BookingStep = 'SELECT' | 'SEAT' | 'SUMMARY' | 'CONFIRMATION';
 type CabinFilter = 'all' | 'Economy' | 'Premium Economy' | 'Business' | 'First Class';
 type SortOption = 'price_asc' | 'duration_asc' | 'departure_asc' | 'arrival_asc';
 
-const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
+const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack, user }) => {
   const [results] = useState<FlightResult[]>(MOCK_SEARCH_RESULTS);
   
   // Filter States
@@ -36,7 +37,9 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
   const [bookingStep, setBookingStep] = useState<BookingStep>('SELECT');
   const [selectedFlight, setSelectedFlight] = useState<FlightResult | null>(null);
   const [selectedSeat, setSelectedSeat] = useState<string>('');
+  const [seatPrice, setSeatPrice] = useState(0);
   const [addInsurance, setAddInsurance] = useState(false);
+  const [pointsRedeemed, setPointsRedeemed] = useState(0);
 
   // Initialize Insurance state from search criteria
   useEffect(() => {
@@ -47,13 +50,31 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
 
   // --- Helpers ---
 
-  const handleBookClick = (flight: FlightResult) => {
-    setSelectedFlight(flight);
-    setBookingStep('SEAT'); // Proceed to seat selection first
+  // Dynamic Pricing Logic based on Cabin Class
+  const getDynamicPrice = (basePrice: number, cabin: CabinFilter) => {
+      // If 'all' or 'Economy', return base. Otherwise multiply.
+      // This simulates that the mock result is the "base" and other classes cost more.
+      // In a real app, the API would return specific prices for specific cabins.
+      switch (cabin) {
+          case 'Premium Economy': return Math.round(basePrice * 1.6);
+          case 'Business': return Math.round(basePrice * 3.5);
+          case 'First Class': return Math.round(basePrice * 6.0);
+          default: return basePrice;
+      }
   };
 
-  const handleSeatSelected = (seat: string) => {
+  const handleBookClick = (flight: FlightResult) => {
+    // If the user selected a specific class filter, lock that in. Otherwise default to Economy or what's in the flight object.
+    const activeClass = cabinFilter !== 'all' ? cabinFilter : flight.cabinClass;
+    const adjustedPrice = getDynamicPrice(flight.price, cabinFilter);
+    
+    setSelectedFlight({ ...flight, cabinClass: activeClass, price: adjustedPrice });
+    setBookingStep('SEAT'); 
+  };
+
+  const handleSeatSelected = (seat: string, price: number) => {
     setSelectedSeat(seat);
+    setSeatPrice(price);
     setBookingStep('SUMMARY');
   };
 
@@ -99,58 +120,63 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
     return minutes;
   };
 
-  // Get unique airlines for filter, ONLY FLOPCOAST
   const availableAirlines: string[] = Array.from(new Set(results.filter(r => r.airline.includes('Flopcoast')).map(r => r.airline)));
 
-  // Filter and Sort Logic
-  const filteredAndSortedResults = results
-    .filter(flight => {
-        // Airline Restriction: Only allow Flopcoast flights
-        if (!flight.airline.includes('Flopcoast')) return false;
+  // Filter and Sort Logic using useMemo for performance
+  const filteredAndSortedResults = useMemo(() => {
+    return results
+      .filter(flight => {
+          if (!flight.airline.includes('Flopcoast')) return false;
 
-        // Price Filter
-        if (flight.price > maxPrice) return false;
-        
-        // Stops Filter
-        if (stopsFilter === '0' && flight.stops > 0) return false;
-        if (stopsFilter === '1' && flight.stops !== 1) return false;
-        if (stopsFilter === '2+' && flight.stops < 2) return false;
+          // Adjust check price based on selected cabin filter to ensure filtering works on "real" price
+          const currentPrice = getDynamicPrice(flight.price, cabinFilter);
+          if (currentPrice > maxPrice) return false;
+          
+          if (stopsFilter === '0' && flight.stops > 0) return false;
+          if (stopsFilter === '1' && flight.stops !== 1) return false;
+          if (stopsFilter === '2+' && flight.stops < 2) return false;
 
-        // Time Filter (Fixed logic: Morning 5-12, Afternoon 12-18, Evening 18-5)
-        const hour = parseInt(flight.departureTime.split(':')[0]);
-        if (timeFilter === 'morning' && (hour < 5 || hour >= 12)) return false;
-        if (timeFilter === 'afternoon' && (hour < 12 || hour >= 18)) return false;
-        if (timeFilter === 'evening' && (hour >= 5 && hour < 18)) return false;
+          const hour = parseInt(flight.departureTime.split(':')[0]);
+          if (timeFilter === 'morning' && (hour < 5 || hour >= 12)) return false;
+          if (timeFilter === 'afternoon' && (hour < 12 || hour >= 18)) return false;
+          if (timeFilter === 'evening' && (hour >= 5 && hour < 18)) return false;
 
-        // Cabin Class Filter
-        if (cabinFilter !== 'all' && flight.cabinClass !== cabinFilter) return false;
+          // If cabin filter is specific, we only show flights compatible (logic handled by dynamic pricing mostly, but technically all flights have all classes in this mock)
+          
+          if (selectedAirlines.length > 0 && !selectedAirlines.includes(flight.airline)) return false;
 
-        // Airline Filter (User selected)
-        if (selectedAirlines.length > 0 && !selectedAirlines.includes(flight.airline)) return false;
+          if (criteria.to && !flight.destination.toLowerCase().includes(criteria.to.toLowerCase().split(' ')[0])) {
+              const hasDestination = results.some(r => r.destination.toLowerCase().includes(criteria.to.toLowerCase().split(' ')[0]));
+              if (hasDestination) return false;
+          }
 
-        // Basic destination matching (simplified for mock)
-        if (criteria.to && !flight.destination.toLowerCase().includes(criteria.to.toLowerCase().split(' ')[0])) {
-            const hasDestination = results.some(r => r.destination.toLowerCase().includes(criteria.to.toLowerCase().split(' ')[0]));
-            if (hasDestination) return false;
-        }
-
-        return true;
-    })
-    .sort((a, b) => {
-        if (sortBy === 'price_asc') return a.price - b.price;
-        if (sortBy === 'duration_asc') return parseDuration(a.duration) - parseDuration(b.duration);
-        if (sortBy === 'departure_asc') return a.departureTime.localeCompare(b.departureTime);
-        if (sortBy === 'arrival_asc') return a.arrivalTime.localeCompare(b.arrivalTime);
-        return 0;
-    });
+          return true;
+      })
+      .map(flight => ({
+          ...flight,
+          // Inject the dynamic price into the view model
+          price: getDynamicPrice(flight.price, cabinFilter),
+          cabinClass: cabinFilter !== 'all' ? cabinFilter : flight.cabinClass
+      }))
+      .sort((a, b) => {
+          if (sortBy === 'price_asc') return a.price - b.price;
+          if (sortBy === 'duration_asc') return parseDuration(a.duration) - parseDuration(b.duration);
+          if (sortBy === 'departure_asc') return a.departureTime.localeCompare(b.departureTime);
+          if (sortBy === 'arrival_asc') return a.arrivalTime.localeCompare(b.arrivalTime);
+          return 0;
+      });
+  }, [results, maxPrice, stopsFilter, timeFilter, cabinFilter, selectedAirlines, criteria.to, sortBy]);
 
   // --- Views ---
 
   if (bookingStep === 'CONFIRMATION') {
-     // ... (Existing Confirmation Logic remains same)
-     // To keep response concise, omitting duplication unless requested. 
-     // Using existing structure.
-     const total = selectedFlight ? selectedFlight.price * criteria.passengers + Math.round(selectedFlight.price * 0.12) * criteria.passengers + (addInsurance ? 45 * criteria.passengers : 0) : 0;
+     const baseTotal = selectedFlight ? selectedFlight.price * criteria.passengers : 0;
+     const taxes = Math.round(baseTotal * 0.12);
+     const insuranceCost = addInsurance ? 45 * criteria.passengers : 0;
+     const seatCost = seatPrice * criteria.passengers;
+     // 100 points = $1 discount
+     const discount = pointsRedeemed / 100;
+     const finalTotal = baseTotal + taxes + insuranceCost + seatCost - discount;
     
     return (
       <div className="min-h-screen pt-32 pb-12 px-6 md:px-12 flex flex-col items-center justify-center animate-in fade-in slide-in-from-bottom-4">
@@ -196,7 +222,7 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
                 </div>
                 <div className="col-span-2 pt-2 border-t border-silver-200 dark:border-zinc-800 flex justify-between items-center">
                    <span className="text-sm font-bold uppercase text-silver-400">Total Paid</span>
-                   <span className="font-display font-bold text-2xl">${total}</span>
+                   <span className="font-display font-bold text-2xl">${finalTotal.toFixed(2)}</span>
                 </div>
              </div>
           </div>
@@ -229,7 +255,14 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
   }
 
   if (bookingStep === 'SUMMARY' && selectedFlight) {
-    const total = selectedFlight.price * criteria.passengers + (addInsurance ? 45 * criteria.passengers : 0);
+    const baseTotal = selectedFlight.price * criteria.passengers;
+    const taxes = Math.round(baseTotal * 0.12);
+    const insuranceTotal = addInsurance ? 45 * criteria.passengers : 0;
+    const seatsTotal = seatPrice * criteria.passengers;
+    const discount = pointsRedeemed / 100;
+    const grandTotal = baseTotal + taxes + insuranceTotal + seatsTotal - discount;
+
+    const maxRedeemablePoints = user ? Math.min(user.awardsPoints, Math.floor(grandTotal * 100)) : 0;
 
     return (
       <div className="min-h-screen pt-32 pb-12 px-6 md:px-12 max-w-[1920px] mx-auto animate-in fade-in slide-in-from-right-8">
@@ -243,7 +276,6 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
             <h2 className="text-3xl font-display font-bold">Review your trip</h2>
             
             <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-silver-200 dark:border-zinc-800">
-               {/* Content same as before */}
                <div className="flex justify-between items-start mb-6">
                   <div>
                     <h3 className="font-bold text-xl mb-1">{selectedFlight.origin} to {selectedFlight.destination}</h3>
@@ -275,6 +307,36 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
                      <div className="text-xs text-silver-500">{selectedFlight.destination}</div>
                   </div>
                </div>
+
+               {/* Points Redemption */}
+               {user && (
+                   <div className="mt-6 p-6 bg-silver-50 dark:bg-zinc-950 rounded-2xl border border-silver-200 dark:border-zinc-800">
+                       <div className="flex items-center gap-3 mb-4">
+                           <Award className="text-yellow-500" />
+                           <h4 className="font-bold">Redeem Flopcoast Points</h4>
+                       </div>
+                       <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                           <div className="text-sm text-silver-500">
+                               Available: <span className="font-bold text-black dark:text-white">{user.awardsPoints.toLocaleString()} pts</span>
+                           </div>
+                           <div className="flex items-center gap-4 w-full md:w-auto">
+                               <input 
+                                  type="range"
+                                  min="0"
+                                  max={maxRedeemablePoints}
+                                  step="100"
+                                  value={pointsRedeemed}
+                                  onChange={(e) => setPointsRedeemed(parseInt(e.target.value))}
+                                  className="w-full md:w-48 accent-black dark:accent-white"
+                               />
+                               <div className="text-right">
+                                   <div className="font-bold text-lg">{pointsRedeemed.toLocaleString()} pts</div>
+                                   <div className="text-xs text-green-600">-${(pointsRedeemed / 100).toFixed(2)}</div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               )}
                
                {/* Insurance Section */}
                <div className="mt-6 border-t border-silver-100 dark:border-zinc-800 pt-8">
@@ -292,21 +354,10 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
                                 <div className="font-bold text-lg text-green-600">+$45<span className="text-xs text-silver-500 font-normal">/pp</span></div>
                             </div>
                             <p className="text-silver-500 text-sm leading-relaxed max-w-xl">
-                               Complete peace of mind with our comprehensive coverage package:
+                               Medical up to $100k, 100% Cancellation, Baggage up to $2.5k.
                             </p>
-                            <ul className="text-xs text-silver-500 mt-2 space-y-1 list-disc list-inside">
-                               <li><strong>Medical Emergency:</strong> Coverage up to $100,000 for unexpected illness or injury.</li>
-                               <li><strong>Trip Cancellation:</strong> 100% reimbursement if you cancel for covered reasons.</li>
-                               <li><strong>Baggage Protection:</strong> Up to $2,500 for lost, stolen, or damaged luggage.</li>
-                               <li><strong>Trip Delay:</strong> Reimbursement up to $500/day for expenses during delays over 6 hours.</li>
-                            </ul>
                         </div>
                      </div>
-                     {addInsurance && (
-                         <div className="absolute top-0 right-0 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-xl uppercase tracking-wider">
-                             Active
-                         </div>
-                     )}
                   </label>
                </div>
             </div>
@@ -319,21 +370,31 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
                 <div className="space-y-4 mb-8">
                    <div className="flex justify-between text-sm">
                       <span className="text-silver-500">Flight x {criteria.passengers}</span>
-                      <span className="font-medium">${selectedFlight.price * criteria.passengers}</span>
+                      <span className="font-medium">${baseTotal}</span>
+                   </div>
+                   <div className="flex justify-between text-sm">
+                      <span className="text-silver-500">Seat Selection</span>
+                      <span className="font-medium">${seatsTotal}</span>
                    </div>
                    <div className="flex justify-between text-sm">
                       <span className="text-silver-500">Taxes & Fees</span>
-                      <span className="font-medium">${Math.round(selectedFlight.price * 0.12) * criteria.passengers}</span>
+                      <span className="font-medium">${taxes}</span>
                    </div>
                    {addInsurance && (
                      <div className="flex justify-between text-sm text-green-600">
                         <span>Trip Insurance</span>
-                        <span className="font-medium">+${45 * criteria.passengers}</span>
+                        <span className="font-medium">+${insuranceTotal}</span>
+                     </div>
+                   )}
+                   {pointsRedeemed > 0 && (
+                     <div className="flex justify-between text-sm text-green-600">
+                        <span>Points Discount</span>
+                        <span className="font-medium">-${discount.toFixed(2)}</span>
                      </div>
                    )}
                    <div className="pt-4 border-t border-silver-200 dark:border-zinc-800 flex justify-between items-end">
                       <span className="font-bold text-lg">Total</span>
-                      <span className="font-display font-bold text-4xl">${total + Math.round(selectedFlight.price * 0.12) * criteria.passengers}</span>
+                      <span className="font-display font-bold text-4xl">${grandTotal.toFixed(2)}</span>
                    </div>
                 </div>
                 <button 
@@ -363,7 +424,7 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
             Select your flight
           </h1>
           <p className="text-silver-500 mt-2">
-            {filteredAndSortedResults.length} flights found for <strong className="text-black dark:text-white">{criteria.from || 'Origin'}</strong> to <strong className="text-black dark:text-white">{criteria.to || 'Destination'}</strong>
+            Showing results for <strong className="text-black dark:text-white">{criteria.from || 'Origin'}</strong> to <strong className="text-black dark:text-white">{criteria.to || 'Destination'}</strong>
           </p>
         </div>
 
@@ -385,7 +446,7 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         
-        {/* Filters Sidebar */}
+        {/* Filters Sidebar - Hide on small screens usually, kept simple here */}
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-white dark:bg-zinc-900 p-6 rounded-[2rem] border border-silver-200 dark:border-zinc-800 sticky top-32">
               <div className="flex items-center justify-between mb-6">
@@ -405,14 +466,14 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
                     <input 
                       type="range" 
                       min="100" 
-                      max="5000" 
+                      max="10000" 
                       value={maxPrice} 
                       onChange={(e) => setMaxPrice(parseInt(e.target.value))}
                       className="w-full accent-black dark:accent-white h-2 bg-silver-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer"
                     />
                     <div className="flex justify-between text-sm font-medium mt-2">
                       <span>$100</span>
-                      <span>${maxPrice}</span>
+                      <span>${maxPrice.toLocaleString()}</span>
                     </div>
                 </div>
 
@@ -477,28 +538,6 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
                       ))}
                     </div>
                 </div>
-
-                 {/* Airline Filter */}
-                 {availableAirlines.length > 0 && (
-                    <div>
-                        <label className="text-xs font-bold uppercase tracking-wider text-silver-400 mb-4 flex items-center gap-2">
-                        <Building size={14} /> Airlines
-                        </label>
-                        <div className="space-y-2">
-                        {availableAirlines.map(airline => (
-                            <label key={airline} className="flex items-center gap-3 p-2 hover:bg-silver-50 dark:hover:bg-zinc-800 rounded-lg cursor-pointer transition-colors">
-                                <input 
-                                type="checkbox" 
-                                checked={selectedAirlines.includes(airline)}
-                                onChange={() => toggleAirline(airline)}
-                                className="w-4 h-4 rounded border-silver-300 text-black focus:ring-black accent-black"
-                                />
-                                <span className="text-sm font-medium">{airline}</span>
-                            </label>
-                        ))}
-                        </div>
-                    </div>
-                 )}
               </div>
           </div>
         </div>
@@ -571,21 +610,31 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
                       </div>
 
                       {/* Snippets (Baggage & Amenities) */}
-                      <div className="mt-6 flex flex-wrap gap-4 pt-4 border-t border-silver-100 dark:border-zinc-800">
-                          <span className="text-xs text-silver-500 flex items-center gap-1.5 font-medium"><Luggage size={14}/> {flight.baggage}</span>
-                          {flight.amenities.map(item => {
-                              let Icon = Check;
-                              if (item.toLowerCase().includes('wifi')) Icon = Wifi;
-                              if (item.toLowerCase().includes('meal')) Icon = Coffee;
-                              if (item.toLowerCase().includes('power')) Icon = Zap;
-                              if (item.toLowerCase().includes('tv') || item.toLowerCase().includes('stream')) Icon = Tv;
-                              
-                              return (
-                                <span key={item} className="text-xs text-silver-500 flex items-center gap-1.5 font-medium">
-                                    <Icon size={14} className="text-silver-400" /> {item}
-                                </span>
-                              );
-                          })}
+                      <div className="mt-6 pt-4 border-t border-silver-100 dark:border-zinc-800">
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-silver-400 mb-2">Included Amenities</div>
+                          <div className="flex flex-wrap gap-3">
+                              <span className="text-xs bg-silver-50 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-silver-100 dark:border-zinc-700 text-silver-600 dark:text-silver-300 flex items-center gap-2">
+                                  <Luggage size={14} className="text-silver-400"/> {flight.baggage}
+                              </span>
+                              {flight.amenities.map(item => {
+                                  let Icon = Check;
+                                  if (item.toLowerCase().includes('wifi')) Icon = Wifi;
+                                  if (item.toLowerCase().includes('meal')) Icon = Coffee;
+                                  if (item.toLowerCase().includes('power')) Icon = Zap;
+                                  if (item.toLowerCase().includes('tv') || item.toLowerCase().includes('stream')) Icon = Tv;
+                                  
+                                  return (
+                                    <span key={item} className="text-xs bg-silver-50 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-silver-100 dark:border-zinc-700 text-silver-600 dark:text-silver-300 flex items-center gap-2">
+                                        <Icon size={14} className={
+                                            item.toLowerCase().includes('wifi') ? 'text-blue-500' :
+                                            item.toLowerCase().includes('meal') ? 'text-orange-500' :
+                                            'text-silver-400'
+                                        } /> 
+                                        {item}
+                                    </span>
+                                  );
+                              })}
+                          </div>
                       </div>
                     </div>
 
@@ -666,7 +715,7 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
                       {selectedForComparison.map((flight) => (
                           <div key={flight.id} className="border border-silver-200 dark:border-zinc-800 rounded-2xl p-6 bg-silver-50 dark:bg-zinc-950 flex flex-col h-full">
                               <div className="mb-6 pb-6 border-b border-silver-200 dark:border-zinc-800">
-                                  <div className="text-2xl font-display font-bold mb-2">${flight.price}</div>
+                                  <div className="text-2xl font-display font-bold mb-2">${getDynamicPrice(flight.price, cabinFilter)}</div>
                                   <div className="font-bold text-lg">{flight.airline}</div>
                                   <div className="text-sm text-silver-500">{flight.flightNumber}</div>
                               </div>
@@ -694,7 +743,7 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
                                   </div>
                                   <div>
                                       <div className="text-xs uppercase font-bold text-silver-400 mb-1">Class</div>
-                                      <div className="font-semibold">{flight.cabinClass}</div>
+                                      <div className="font-semibold">{cabinFilter !== 'all' ? cabinFilter : flight.cabinClass}</div>
                                   </div>
                                   <div>
                                       <div className="text-xs uppercase font-bold text-silver-400 mb-1">Aircraft</div>
@@ -737,22 +786,27 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack }) => {
 };
 
 // Seat Selection Component with Cabin Layout
-const SeatSelection: React.FC<{ flight: FlightResult; onSelect: (seat: string) => void; onBack: () => void }> = ({ flight, onSelect, onBack }) => {
+const SeatSelection: React.FC<{ flight: FlightResult; onSelect: (seat: string, price: number) => void; onBack: () => void }> = ({ flight, onSelect, onBack }) => {
    const [selectedSeat, setSelectedSeat] = useState<string | null>(null);
+   const [currentSeatPrice, setCurrentSeatPrice] = useState(0);
 
    const businessRows = [1, 2, 3];
    const economyRows = [10, 11, 12, 13, 14, 15];
 
-   // Layout Definitions
-   const businessCols = ['A', 'C', 'D', 'F']; // 2-2 Configuration
-   const economyCols = ['A', 'B', 'C', 'D', 'E', 'F']; // 3-3 Configuration
-
    // Mock occupied seats
    const occupiedSeats = ['1A', '2C', '10F', '11A', '12B', '14D'];
+
+   const getSeatPrice = (seat: string) => {
+       const row = parseInt(seat.replace(/\D/g, ''));
+       if (row < 10) return 200; // Business
+       if (row === 10 || row === 11) return 50; // Extra Legroom
+       return 0; // Standard Economy
+   };
 
    const handleSeatClick = (seat: string) => {
       if (occupiedSeats.includes(seat)) return;
       setSelectedSeat(seat);
+      setCurrentSeatPrice(getSeatPrice(seat));
    };
 
    return (
@@ -769,17 +823,19 @@ const SeatSelection: React.FC<{ flight: FlightResult; onSelect: (seat: string) =
                </p>
 
                {/* Legend */}
-               <div className="flex gap-6 mb-8 text-xs font-medium text-silver-500">
-                  <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-white dark:bg-zinc-700 border border-silver-200 dark:border-zinc-600"></div> Available</div>
+               <div className="flex flex-wrap gap-4 md:gap-6 mb-8 text-xs font-medium text-silver-500">
+                  <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-white dark:bg-zinc-700 border border-silver-200 dark:border-zinc-600"></div> Free</div>
+                  <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-blue-100 dark:bg-blue-900 border border-blue-200"></div> $50+</div>
+                  <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-purple-100 dark:bg-purple-900 border border-purple-200"></div> $200+</div>
                   <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-black dark:bg-white"></div> Selected</div>
                   <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-silver-100 dark:bg-zinc-800 text-silver-300 flex items-center justify-center font-bold">X</div> Occupied</div>
                </div>
 
-               <div className="bg-white dark:bg-zinc-900 rounded-[3rem] p-8 md:p-12 border border-silver-200 dark:border-zinc-800 relative overflow-hidden flex flex-col items-center">
+               <div className="bg-white dark:bg-zinc-900 rounded-[3rem] p-8 md:p-12 border border-silver-200 dark:border-zinc-800 relative overflow-hidden flex flex-col items-center overflow-x-auto">
                   
                   {/* Plane Body Decor */}
-                  <div className="absolute inset-y-0 left-0 w-12 bg-silver-50 dark:bg-zinc-950/50 border-r border-silver-100 dark:border-zinc-800"></div>
-                  <div className="absolute inset-y-0 right-0 w-12 bg-silver-50 dark:bg-zinc-950/50 border-l border-silver-100 dark:border-zinc-800"></div>
+                  <div className="absolute inset-y-0 left-0 w-12 bg-silver-50 dark:bg-zinc-950/50 border-r border-silver-100 dark:border-zinc-800 hidden md:block"></div>
+                  <div className="absolute inset-y-0 right-0 w-12 bg-silver-50 dark:bg-zinc-950/50 border-l border-silver-100 dark:border-zinc-800 hidden md:block"></div>
                   
                   {/* Cockpit Indicator */}
                   <div className="w-32 h-16 bg-gradient-to-b from-silver-100 to-transparent dark:from-zinc-800 dark:to-transparent rounded-b-full absolute -top-10"></div>
@@ -790,7 +846,7 @@ const SeatSelection: React.FC<{ flight: FlightResult; onSelect: (seat: string) =
                      <div className="mb-12">
                         <div className="text-center mb-6 text-[10px] font-bold uppercase tracking-widest text-silver-400 flex items-center justify-center gap-2">
                             <span className="h-[1px] w-8 bg-silver-200 dark:bg-zinc-700"></span>
-                            Business Class (2-2)
+                            Business Class
                             <span className="h-[1px] w-8 bg-silver-200 dark:bg-zinc-700"></span>
                         </div>
                         <div className="flex flex-col gap-4">
@@ -810,7 +866,7 @@ const SeatSelection: React.FC<{ flight: FlightResult; onSelect: (seat: string) =
                                                    className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-all
                                                       ${isOccupied ? 'bg-silver-100 dark:bg-zinc-800 text-silver-300 cursor-not-allowed' : 
                                                         isSelected ? 'bg-black dark:bg-white text-white dark:text-black scale-110 shadow-xl' : 
-                                                        'bg-white dark:bg-zinc-700 border border-silver-200 dark:border-zinc-600 hover:border-black dark:hover:border-white'}
+                                                        'bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 hover:border-black dark:hover:border-white text-purple-700 dark:text-purple-300'}
                                                    `}
                                                >
                                                    {isOccupied ? 'X' : seatId}
@@ -834,7 +890,7 @@ const SeatSelection: React.FC<{ flight: FlightResult; onSelect: (seat: string) =
                                                    className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-all
                                                       ${isOccupied ? 'bg-silver-100 dark:bg-zinc-800 text-silver-300 cursor-not-allowed' : 
                                                         isSelected ? 'bg-black dark:bg-white text-white dark:text-black scale-110 shadow-xl' : 
-                                                        'bg-white dark:bg-zinc-700 border border-silver-200 dark:border-zinc-600 hover:border-black dark:hover:border-white'}
+                                                        'bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 hover:border-black dark:hover:border-white text-purple-700 dark:text-purple-300'}
                                                    `}
                                                >
                                                    {isOccupied ? 'X' : seatId}
@@ -851,7 +907,7 @@ const SeatSelection: React.FC<{ flight: FlightResult; onSelect: (seat: string) =
                      <div>
                         <div className="text-center mb-6 text-[10px] font-bold uppercase tracking-widest text-silver-400 flex items-center justify-center gap-2">
                             <span className="h-[1px] w-8 bg-silver-200 dark:bg-zinc-700"></span>
-                            Economy Class (3-3)
+                            Economy Class
                             <span className="h-[1px] w-8 bg-silver-200 dark:bg-zinc-700"></span>
                         </div>
                         <div className="flex flex-col gap-3">
@@ -863,6 +919,7 @@ const SeatSelection: React.FC<{ flight: FlightResult; onSelect: (seat: string) =
                                            const seatId = `${row}${col}`;
                                            const isOccupied = occupiedSeats.includes(seatId);
                                            const isSelected = selectedSeat === seatId;
+                                           const isExtraLegroom = row === 10 || row === 11;
                                            return (
                                                <button 
                                                    key={seatId}
@@ -871,6 +928,7 @@ const SeatSelection: React.FC<{ flight: FlightResult; onSelect: (seat: string) =
                                                    className={`w-9 h-9 rounded-md flex items-center justify-center text-[10px] font-bold transition-all
                                                       ${isOccupied ? 'bg-silver-100 dark:bg-zinc-800 text-silver-300 cursor-not-allowed' : 
                                                         isSelected ? 'bg-black dark:bg-white text-white dark:text-black scale-110 shadow-lg' : 
+                                                        isExtraLegroom ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 hover:border-black' :
                                                         'bg-white dark:bg-zinc-700 border border-silver-200 dark:border-zinc-600 hover:border-black dark:hover:border-white'}
                                                    `}
                                                >
@@ -887,6 +945,7 @@ const SeatSelection: React.FC<{ flight: FlightResult; onSelect: (seat: string) =
                                            const seatId = `${row}${col}`;
                                            const isOccupied = occupiedSeats.includes(seatId);
                                            const isSelected = selectedSeat === seatId;
+                                           const isExtraLegroom = row === 10 || row === 11;
                                            return (
                                                <button 
                                                    key={seatId}
@@ -895,6 +954,7 @@ const SeatSelection: React.FC<{ flight: FlightResult; onSelect: (seat: string) =
                                                    className={`w-9 h-9 rounded-md flex items-center justify-center text-[10px] font-bold transition-all
                                                       ${isOccupied ? 'bg-silver-100 dark:bg-zinc-800 text-silver-300 cursor-not-allowed' : 
                                                         isSelected ? 'bg-black dark:bg-white text-white dark:text-black scale-110 shadow-lg' : 
+                                                        isExtraLegroom ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 hover:border-black' :
                                                         'bg-white dark:bg-zinc-700 border border-silver-200 dark:border-zinc-600 hover:border-black dark:hover:border-white'}
                                                    `}
                                                >
@@ -932,11 +992,15 @@ const SeatSelection: React.FC<{ flight: FlightResult; onSelect: (seat: string) =
                         <span className="text-silver-500">Seat</span>
                         <span className="font-bold text-xl">{selectedSeat || '-'}</span>
                      </div>
+                     <div className="flex justify-between items-center py-4 border-b border-silver-100 dark:border-zinc-800 text-green-600">
+                        <span className="font-medium">Seat Price</span>
+                        <span className="font-bold text-lg">${currentSeatPrice}</span>
+                     </div>
                   </div>
                   
                   <button 
                      disabled={!selectedSeat}
-                     onClick={() => selectedSeat && onSelect(selectedSeat)}
+                     onClick={() => selectedSeat && onSelect(selectedSeat, currentSeatPrice)}
                      className="w-full py-4 bg-black dark:bg-white text-white dark:text-black rounded-xl font-bold text-lg shadow-xl hover:scale-[1.02] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                      Confirm Seat

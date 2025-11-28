@@ -8,15 +8,45 @@ interface HeroProps {
 }
 
 const CITIES = [
-  'New York (JFK)', 'London (LHR)', 'Tokyo (HND)', 'Los Angeles (LAX)', 
-  'Dubai (DXB)', 'Singapore (SIN)', 'Sao Paulo (GRU)', 'Buenos Aires (EZE)', 
-  'Bogota (BOG)', 'Queen Jiafei (JLU)', 'Floptopia (FLP)', 'Summeria (XSX)',
-  'Beijing (PEK)', 'Shanghai (PVG)', 'Hong Kong (HKG)', 'Mumbai (BOM)', 
-  'Rio de Janeiro (GIG)', 'Cusco (CUZ)', 'Santiago (SCL)', 'Lima (LIM)',
-  // New Destinations
-  'Cairo (CAI)', 'Johannesburg (JNB)', 'Lagos (LOS)', 'Paris (CDG)', 
-  'Berlin (BER)', 'Rome (FCO)', 'Madrid (MAD)', 'Toronto (YYZ)', 
-  'Mexico City (MEX)', 'Chicago (ORD)', 'Vancouver (YVR)'
+  // North America
+  'New York (JFK)', 'Los Angeles (LAX)', 'Chicago (ORD)', 'Toronto (YYZ)', 'Vancouver (YVR)',
+  'San Francisco (SFO)', 'Miami (MIA)', 'Las Vegas (LAS)', 'Atlanta (ATL)', 'Dallas (DFW)',
+  'Denver (DEN)', 'Seattle (SEA)', 'Boston (BOS)', 'Orlando (MCO)', 'Montreal (YUL)', 
+  'Mexico City (MEX)', 'Cancun (CUN)', 'San Diego (SAN)', 'Philadelphia (PHL)', 'Phoenix (PHX)',
+  'Houston (IAH)', 'Detroit (DTW)', 'Minneapolis (MSP)', 'Calgary (YYC)',
+
+  // Europe
+  'London (LHR)', 'Paris (CDG)', 'Frankfurt (FRA)', 'Amsterdam (AMS)', 'Madrid (MAD)',
+  'Rome (FCO)', 'Berlin (BER)', 'Munich (MUC)', 'Zurich (ZRH)', 'Barcelona (BCN)',
+  'Dublin (DUB)', 'Lisbon (LIS)', 'Vienna (VIE)', 'Copenhagen (CPH)', 'Milan (MXP)',
+  'Istanbul (IST)', 'Athens (ATH)', 'Stockholm (ARN)', 'Manchester (MAN)', 'Brussels (BRU)',
+  'Geneva (GVA)', 'Oslo (OSL)', 'Helsinki (HEL)', 'Warsaw (WAW)', 'Prague (PRG)', 'Budapest (BUD)',
+  'Edinburgh (EDI)', 'Nice (NCE)',
+
+  // Asia & Middle East
+  'Tokyo (HND)', 'Singapore (SIN)', 'Dubai (DXB)', 'Doha (DOH)', 'Hong Kong (HKG)',
+  'Bangkok (BKK)', 'Seoul (ICN)', 'Beijing (PEK)', 'Shanghai (PVG)', 'Mumbai (BOM)',
+  'Delhi (DEL)', 'Bangalore (BLR)', 'Kuala Lumpur (KUL)', 'Jakarta (CGK)', 'Manila (MNL)',
+  'Taipei (TPE)', 'Abu Dhabi (AUH)', 'Osaka (KIX)', 'Ho Chi Minh City (SGN)', 'Hanoi (HAN)',
+  'Chennai (MAA)', 'Riyadh (RUH)', 'Tel Aviv (TLV)', 'Maldives (MLE)',
+
+  // Oceania
+  'Sydney (SYD)', 'Melbourne (MEL)', 'Auckland (AKL)', 'Brisbane (BNE)', 'Perth (PER)',
+  'Christchurch (CHC)', 'Fiji (NAN)',
+
+  // South America
+  'Sao Paulo (GRU)', 'Buenos Aires (EZE)', 'Bogota (BOG)', 'Santiago (SCL)', 'Lima (LIM)',
+  'Rio de Janeiro (GIG)', 'Cusco (CUZ)', 'Brasilia (BSB)', 'Panama City (PTY)', 'Quito (UIO)',
+  'Medellin (MDE)', 'Cartagena (CTG)',
+
+  // Africa
+  'Cairo (CAI)', 'Johannesburg (JNB)', 'Lagos (LOS)', 'Casablanca (CMN)', 'Nairobi (NBO)',
+  'Addis Ababa (ADD)', 'Cape Town (CPT)', 'Marrakech (RAK)',
+
+  // Fictional
+  'Queen Jiafei (JLU)', 'Floptopia (FLP)', 'Summeria (XSX)', 'Erendits (ERD)',
+  'Manipple (MAY)', 'Alejandra Coast (AJC)', 'Jilu City (JLC)', 'Da Hood (DHR)',
+  'Poosay Bottom (PBT)'
 ];
 
 const Hero: React.FC<HeroProps> = ({ onSearch }) => {
@@ -318,7 +348,7 @@ const Hero: React.FC<HeroProps> = ({ onSearch }) => {
                 <button 
                   type="submit"
                   disabled={isSearching}
-                  className={`w-full bg-black dark:bg-white text-white dark:text-black py-5 rounded-2xl font-bold text-lg hover:opacity-90 transition-all shadow-xl hover:shadow-2xl mt-4 active:scale-[0.98] flex items-center justify-center gap-2 group relative overflow-hidden ${isSearching ? 'cursor-wait bg-silver-800 dark:bg-silver-200' : ''}`}
+                  className={`w-full bg-black dark:bg-white text-white dark:text-black py-5 rounded-2xl font-bold text-lg hover:opacity-90 transition-all shadow-xl hover:shadow-2xl mt-4 active:scale-[0.98] flex items-center justify-center gap-2 group relative overflow-hidden ${isSearching ? 'cursor-wait bg-silver-800 dark:bg-silver-200' : 'animate-[pulse_3s_infinite]'}`}
                 >
                   {isSearching && (
                     <div className="absolute inset-0 bg-white/20 dark:bg-black/20 animate-pulse"></div>

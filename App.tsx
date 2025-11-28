@@ -11,6 +11,14 @@ import InteractiveMap from './components/InteractiveMap';
 import FlightResults from './components/FlightResults';
 import HelpCenter from './components/HelpCenter';
 import Rewards from './components/Rewards';
+import RewardsCenter from './components/RewardsCenter';
+import UserSettings from './components/UserSettings';
+import InsurancePolicy from './components/InsurancePolicy';
+import InsuranceFullPolicy from './components/InsuranceFullPolicy';
+import OnboardExperience from './components/OnboardExperience';
+import CheckInExperience from './components/CheckInExperience';
+import BaggageInfo from './components/BaggageInfo';
+import Fleet from './components/Fleet';
 import { User, ViewState, SearchCriteria } from './types';
 import { INITIAL_USERS } from './services/mockData';
 
@@ -121,6 +129,11 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleUpdateUser = (updatedUser: User) => {
+    setCurrentUser(updatedUser);
+    setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
+  };
+
   const renderView = () => {
     switch (displayView) {
       case 'HOME':
@@ -135,10 +148,11 @@ const App: React.FC = () => {
           <FlightResults 
             criteria={searchCriteria || { from: '', to: '', date: '', passengers: 1, flightType: 'one-way', travelClass: 'Economy' }} 
             onBack={() => setCurrentView('HOME')}
+            user={currentUser}
           />
         );
       case 'DASHBOARD':
-        return currentUser ? <Dashboard user={currentUser} /> : <Hero onSearch={handleSearch} />; 
+        return currentUser ? <Dashboard user={currentUser} onNavigate={setCurrentView} /> : <Hero onSearch={handleSearch} />; 
       case 'ADMIN':
         return currentUser?.role === 'ADMIN' ? <AdminPanel users={users} /> : <Hero onSearch={handleSearch} />; 
       case 'ABOUT':
@@ -147,6 +161,28 @@ const App: React.FC = () => {
         return <HelpCenter />;
       case 'REWARDS':
         return <Rewards />;
+      case 'REWARDS_CENTER':
+        return currentUser ? <RewardsCenter user={currentUser} onBack={() => setCurrentView('DASHBOARD')} /> : <Hero onSearch={handleSearch} />;
+      case 'SETTINGS':
+        return currentUser ? <UserSettings user={currentUser} onBack={() => setCurrentView('DASHBOARD')} onUpdateUser={handleUpdateUser} /> : <Hero onSearch={handleSearch} />;
+      case 'INSURANCE':
+        return <InsurancePolicy onNavigate={(view) => {
+            setCurrentView(view);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} />;
+      case 'INSURANCE_FULL_POLICY':
+        return <InsuranceFullPolicy onBack={() => {
+            setCurrentView('INSURANCE');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} />;
+      case 'ONBOARD':
+        return <OnboardExperience />;
+      case 'CHECKIN':
+        return <CheckInExperience />;
+      case 'BAGGAGE':
+        return <BaggageInfo />;
+      case 'FLEET':
+        return <Fleet />;
       default:
         return <Hero onSearch={handleSearch} />;
     }

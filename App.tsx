@@ -12,6 +12,9 @@ import FlightResults from './components/FlightResults';
 import HelpCenter from './components/HelpCenter';
 import Rewards from './components/Rewards';
 import RewardsCenter from './components/RewardsCenter';
+import RewardsEarning from './components/RewardsEarning';
+import RewardsRedemption from './components/RewardsRedemption';
+import RewardsTiers from './components/RewardsTiers';
 import UserSettings from './components/UserSettings';
 import InsurancePolicy from './components/InsurancePolicy';
 import InsuranceFullPolicy from './components/InsuranceFullPolicy';
@@ -19,6 +22,17 @@ import OnboardExperience from './components/OnboardExperience';
 import CheckInExperience from './components/CheckInExperience';
 import BaggageInfo from './components/BaggageInfo';
 import Fleet from './components/Fleet';
+import FirstClass from './components/FirstClass';
+import BusinessClass from './components/BusinessClass';
+import PremiumEconomy from './components/PremiumEconomy';
+import EconomyClass from './components/EconomyClass';
+import ProhibitedItems from './components/ProhibitedItems';
+import OnboardEntertainment from './components/OnboardEntertainment';
+import InternetConnectivity from './components/InternetConnectivity';
+import SpecialServices from './components/SpecialServices';
+import Sustainability from './components/Sustainability';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfService from './components/TermsOfService';
 import { User, ViewState, SearchCriteria } from './types';
 import { INITIAL_USERS } from './services/mockData';
 
@@ -160,9 +174,27 @@ const App: React.FC = () => {
       case 'HELP':
         return <HelpCenter />;
       case 'REWARDS':
-        return <Rewards />;
+        return <Rewards onNavigate={(view) => {
+            setCurrentView(view);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} />;
       case 'REWARDS_CENTER':
         return currentUser ? <RewardsCenter user={currentUser} onBack={() => setCurrentView('DASHBOARD')} /> : <Hero onSearch={handleSearch} />;
+      case 'REWARDS_EARNING':
+        return <RewardsEarning onNavigate={(view) => {
+            setCurrentView(view);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} />;
+      case 'REWARDS_REDEMPTION':
+        return <RewardsRedemption onNavigate={(view) => {
+            setCurrentView(view);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} />;
+      case 'REWARDS_TIERS':
+        return <RewardsTiers onNavigate={(view) => {
+            setCurrentView(view);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} />;
       case 'SETTINGS':
         return currentUser ? <UserSettings user={currentUser} onBack={() => setCurrentView('DASHBOARD')} onUpdateUser={handleUpdateUser} /> : <Hero onSearch={handleSearch} />;
       case 'INSURANCE':
@@ -176,13 +208,41 @@ const App: React.FC = () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }} />;
       case 'ONBOARD':
-        return <OnboardExperience />;
+        return <OnboardExperience onNavigate={(view) => setCurrentView(view)} />;
       case 'CHECKIN':
         return <CheckInExperience />;
       case 'BAGGAGE':
-        return <BaggageInfo />;
+        return <BaggageInfo onNavigate={(view) => {
+            setCurrentView(view);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} />;
       case 'FLEET':
         return <Fleet />;
+      case 'FIRST_CLASS':
+        return <FirstClass onNavigate={(view) => setCurrentView(view)} />;
+      case 'BUSINESS_CLASS':
+        return <BusinessClass onNavigate={(view) => setCurrentView(view)} />;
+      case 'PREMIUM_ECONOMY':
+        return <PremiumEconomy onNavigate={(view) => setCurrentView(view)} />;
+      case 'ECONOMY':
+        return <EconomyClass onNavigate={(view) => setCurrentView(view)} />;
+      case 'PROHIBITED_ITEMS':
+        return <ProhibitedItems onBack={() => {
+            setCurrentView('BAGGAGE');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} />;
+      case 'ENTERTAINMENT':
+        return <OnboardEntertainment onNavigate={(view) => setCurrentView(view)} />;
+      case 'CONNECTIVITY':
+        return <InternetConnectivity onNavigate={(view) => setCurrentView(view)} />;
+      case 'SPECIAL_SERVICES':
+        return <SpecialServices />;
+      case 'SUSTAINABILITY':
+        return <Sustainability />;
+      case 'PRIVACY_POLICY':
+        return <PrivacyPolicy />;
+      case 'TERMS_OF_SERVICE':
+        return <TermsOfService />;
       default:
         return <Hero onSearch={handleSearch} />;
     }

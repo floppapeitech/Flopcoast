@@ -1,51 +1,10 @@
 
 import React from 'react';
-import { Award, Check, Star, Zap, Crown, Shield } from 'lucide-react';
+import { Award, Check, Star, Zap, Crown, Shield, Coins, Ticket, ArrowRight } from 'lucide-react';
+import { ViewState } from '../types';
 
-const Rewards: React.FC = () => {
-  const tiers = [
-    {
-      name: 'Basic',
-      color: 'bg-silver-100 dark:bg-zinc-800',
-      textColor: 'text-silver-600 dark:text-silver-300',
-      icon: <Star size={24} />,
-      points: '0 - 9,999',
-      benefits: ['Earn points on all flights', 'Member-only flight offers', 'Digital membership card']
-    },
-    {
-      name: 'Silver',
-      color: 'bg-gradient-to-br from-gray-100 to-gray-300 dark:from-zinc-700 dark:to-zinc-600',
-      textColor: 'text-black dark:text-white',
-      icon: <Shield size={24} />,
-      points: '10,000 - 24,999',
-      benefits: ['All Basic benefits', 'Priority Check-in', '1 Extra Checked Bag', '10% Bonus Points']
-    },
-    {
-      name: 'Gold',
-      color: 'bg-gradient-to-br from-yellow-100 to-yellow-400 dark:from-yellow-900 dark:to-yellow-600',
-      textColor: 'text-yellow-900 dark:text-yellow-100',
-      icon: <Award size={24} />,
-      points: '25,000 - 49,999',
-      benefits: ['All Silver benefits', 'Lounge Access', 'Priority Boarding', '50% Bonus Points']
-    },
-    {
-      name: 'Platinum',
-      color: 'bg-gradient-to-br from-slate-200 to-slate-400 dark:from-slate-700 dark:to-slate-500',
-      textColor: 'text-slate-900 dark:text-slate-100',
-      icon: <Zap size={24} />,
-      points: '50,000 - 99,999',
-      benefits: ['All Gold benefits', 'First Class Upgrade Vouchers', 'Guaranteed Seat Availability', '75% Bonus Points']
-    },
-    {
-      name: 'Ultimate',
-      color: 'bg-gradient-to-br from-purple-900 to-black text-white',
-      textColor: 'text-white',
-      icon: <Crown size={24} />,
-      points: '100,000+',
-      benefits: ['All Platinum benefits', 'Private Chauffeur Service', 'Personal Concierge', '100% Bonus Points', 'Gift Gold Status to a Friend']
-    }
-  ];
-
+// Add onNavigate prop
+const Rewards: React.FC<{onNavigate?: (view: ViewState) => void}> = ({onNavigate}) => {
   return (
     <div className="min-h-screen pt-32 pb-12 px-6 md:px-12 max-w-[1920px] mx-auto animate-fade-in-up">
       <div className="text-center mb-16 space-y-6">
@@ -61,31 +20,55 @@ const Rewards: React.FC = () => {
         </p>
       </div>
 
-      {/* Tiers Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-16">
-        {tiers.map((tier) => (
-          <div key={tier.name} className={`relative overflow-hidden rounded-[2rem] p-6 border border-silver-200 dark:border-zinc-800 flex flex-col h-full hover:scale-105 transition-transform duration-300 shadow-lg`}>
-            {/* Background for Tier Card */}
-            <div className={`absolute inset-0 opacity-20 ${tier.color}`}></div>
-            
-            <div className="relative z-10 flex flex-col h-full">
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${tier.color} ${tier.textColor}`}>
-                {tier.icon}
+      {/* Navigation Cards */}
+      <div className="grid md:grid-cols-3 gap-8 mb-20">
+          <div 
+             onClick={() => onNavigate?.('REWARDS_EARNING')}
+             className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-10 border border-silver-200 dark:border-zinc-800 shadow-sm hover:shadow-lg transition-all cursor-pointer group"
+          >
+              <div className="w-16 h-16 bg-silver-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-6 text-black dark:text-white group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors">
+                  <Coins size={32} />
               </div>
-              <h3 className="text-2xl font-bold font-display mb-1">{tier.name}</h3>
-              <p className="text-xs font-bold uppercase tracking-wider opacity-60 mb-6">{tier.points} Points</p>
-              
-              <ul className="space-y-3 flex-1">
-                {tier.benefits.map((benefit, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-sm">
-                    <Check size={16} className="shrink-0 mt-0.5" />
-                    <span className="opacity-80">{benefit}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+              <h3 className="text-3xl font-display font-bold mb-4">Earn Points</h3>
+              <p className="text-silver-500 mb-8 leading-relaxed">
+                  Earn on every flight, with our partners, and on everyday purchases with our co-branded cards.
+              </p>
+              <div className="flex items-center gap-2 font-bold group-hover:gap-4 transition-all">
+                  Ways to Earn <ArrowRight size={18} />
+              </div>
           </div>
-        ))}
+
+          <div 
+             onClick={() => onNavigate?.('REWARDS_REDEMPTION')}
+             className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-10 border border-silver-200 dark:border-zinc-800 shadow-sm hover:shadow-lg transition-all cursor-pointer group"
+          >
+              <div className="w-16 h-16 bg-silver-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-6 text-black dark:text-white group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors">
+                  <Ticket size={32} />
+              </div>
+              <h3 className="text-3xl font-display font-bold mb-4">Redeem Points</h3>
+              <p className="text-silver-500 mb-8 leading-relaxed">
+                  Turn your points into flights, upgrades, lounge access, or even shopping gift cards.
+              </p>
+              <div className="flex items-center gap-2 font-bold group-hover:gap-4 transition-all">
+                  Start Spending <ArrowRight size={18} />
+              </div>
+          </div>
+
+          <div 
+             onClick={() => onNavigate?.('REWARDS_TIERS')}
+             className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-10 border border-silver-200 dark:border-zinc-800 shadow-sm hover:shadow-lg transition-all cursor-pointer group"
+          >
+              <div className="w-16 h-16 bg-silver-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-6 text-black dark:text-white group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors">
+                  <Crown size={32} />
+              </div>
+              <h3 className="text-3xl font-display font-bold mb-4">Elite Status</h3>
+              <p className="text-silver-500 mb-8 leading-relaxed">
+                  Climb the tiers from Silver to Ultimate to unlock exclusive benefits like priority boarding and lounge access.
+              </p>
+              <div className="flex items-center gap-2 font-bold group-hover:gap-4 transition-all">
+                  View Benefits <ArrowRight size={18} />
+              </div>
+          </div>
       </div>
 
       {/* Join CTA */}

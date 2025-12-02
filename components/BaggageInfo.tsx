@@ -1,8 +1,13 @@
 
 import React from 'react';
 import { Luggage, Backpack, AlertCircle, Scale, Ruler } from 'lucide-react';
+import { ViewState } from '../types';
 
-const BaggageInfo: React.FC = () => {
+interface BaggageInfoProps {
+    onNavigate?: (view: ViewState) => void;
+}
+
+const BaggageInfo: React.FC<BaggageInfoProps> = ({ onNavigate }) => {
   return (
     <div className="min-h-screen pt-32 pb-12 px-6 md:px-12 max-w-[1920px] mx-auto animate-fade-in-up">
       <div className="text-center mb-16 space-y-6">
@@ -99,7 +104,10 @@ const BaggageInfo: React.FC = () => {
           <p className="text-red-800 dark:text-red-300/80 mb-6 max-w-3xl">
               For safety reasons, certain items are prohibited in both carry-on and checked baggage. This includes explosives, compressed gases, flammable liquids, and lithium batteries (checked bags only).
           </p>
-          <button className="bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm hover:bg-red-700 transition-colors">
+          <button 
+             onClick={() => onNavigate?.('PROHIBITED_ITEMS')}
+             className="bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm hover:bg-red-700 transition-colors"
+          >
               View Full Prohibited List
           </button>
        </div>

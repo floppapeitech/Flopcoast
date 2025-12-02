@@ -48,7 +48,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <FooterLink href="#" onClick={() => onNavigate?.('ABOUT')}>About Us</FooterLink>
               <FooterLink href="#">Careers</FooterLink>
               <FooterLink href="#">Investor Relations</FooterLink>
-              <FooterLink href="#">Sustainability</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('SUSTAINABILITY')}>Sustainability</FooterLink>
             </ul>
           </div>
 
@@ -58,6 +58,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <ul className="space-y-4">
               <FooterLink href="#" onClick={() => onNavigate?.('HELP')}>Help Center</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('INSURANCE')}>Flopcoast Insurance</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('SPECIAL_SERVICES')}>Special Assistance</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('CHECKIN')}>Check-in Guide</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('BAGGAGE')}>Baggage Info</FooterLink>
             </ul>
@@ -71,8 +72,20 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
              <span>English (US)</span>
           </div>
           <div className="flex gap-8 text-sm text-silver-500 dark:text-silver-400 flex-wrap justify-center">
-            <a href="#" className="hover:text-black dark:hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-black dark:hover:text-white transition-colors">Terms of Service</a>
+            <a 
+              href="#" 
+              onClick={(e) => { e.preventDefault(); onNavigate?.('PRIVACY_POLICY'); }} 
+              className="hover:text-black dark:hover:text-white transition-colors"
+            >
+              Privacy Policy
+            </a>
+            <a 
+              href="#" 
+              onClick={(e) => { e.preventDefault(); onNavigate?.('TERMS_OF_SERVICE'); }} 
+              className="hover:text-black dark:hover:text-white transition-colors"
+            >
+              Terms of Service
+            </a>
             <a href="#" className="hover:text-black dark:hover:text-white transition-colors">Accessibility</a>
           </div>
           <div className="text-sm text-silver-400 dark:text-zinc-600">

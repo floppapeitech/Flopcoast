@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { FlightResult, SearchCriteria, User } from '../types';
 import { Filter, ArrowLeft, Check, ShieldCheck, Plane, X, Info, Clock, Building, RotateCcw, Luggage, Wifi, Coffee, Zap, Tv, Armchair, Columns, ChevronDown, ChevronUp, ArrowUpRight, ArrowDownRight, ArrowRight, Award } from 'lucide-react';
 import { MOCK_SEARCH_RESULTS } from '../services/mockData';
+import SeatSelection from './SeatSelection';
 
 interface FlightResultsProps {
   criteria: SearchCriteria;
@@ -128,6 +129,11 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack, user })
       .filter(flight => {
           if (!flight.airline.includes('Flopcoast')) return false;
 
+          // Flight Number Filter
+          if (criteria.flightNumber && !flight.flightNumber.toLowerCase().includes(criteria.flightNumber.toLowerCase())) {
+              return false;
+          }
+
           // Adjust check price based on selected cabin filter to ensure filtering works on "real" price
           const currentPrice = getDynamicPrice(flight.price, cabinFilter);
           if (currentPrice > maxPrice) return false;
@@ -145,6 +151,12 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack, user })
           
           if (selectedAirlines.length > 0 && !selectedAirlines.includes(flight.airline)) return false;
 
+          // Only filter by origin if it's explicitly set (might be empty if searching by flight number status)
+          if (criteria.from && !flight.origin.toLowerCase().includes(criteria.from.toLowerCase().split(' ')[0])) {
+             return false;
+          }
+
+          // Only filter by destination if it's explicitly set (might be empty if searching by flight number)
           if (criteria.to && !flight.destination.toLowerCase().includes(criteria.to.toLowerCase().split(' ')[0])) {
               const hasDestination = results.some(r => r.destination.toLowerCase().includes(criteria.to.toLowerCase().split(' ')[0]));
               if (hasDestination) return false;
@@ -165,7 +177,7 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack, user })
           if (sortBy === 'arrival_asc') return a.arrivalTime.localeCompare(b.arrivalTime);
           return 0;
       });
-  }, [results, maxPrice, stopsFilter, timeFilter, cabinFilter, selectedAirlines, criteria.to, sortBy]);
+  }, [results, maxPrice, stopsFilter, timeFilter, cabinFilter, selectedAirlines, criteria.from, criteria.to, criteria.flightNumber, sortBy]);
 
   // --- Views ---
 
@@ -345,63 +357,83 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack, user })
                      <input type="checkbox" className="hidden" checked={addInsurance} onChange={() => setAddInsurance(!addInsurance)} />
                      
                      <div className="flex items-start gap-4">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${addInsurance ? 'bg-green-500 text-white' : 'bg-silver-100 dark:bg-zinc-800 text-silver-400'}`}>
-                           <ShieldCheck size={20} />
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 border ${addInsurance ? 'bg-green-500 border-green-500 text-white' : 'border-silver-300'}`}>
+                           {addInsurance && <Check size={14} />}
                         </div>
-                        <div className="flex-1">
-                            <div className="flex justify-between items-center mb-1">
-                                <div className="font-bold text-lg">Add Trip Insurance</div>
-                                <div className="font-bold text-lg text-green-600">+$45<span className="text-xs text-silver-500 font-normal">/pp</span></div>
-                            </div>
-                            <p className="text-silver-500 text-sm leading-relaxed max-w-xl">
-                               Medical up to $100k, 100% Cancellation, Baggage up to $2.5k.
-                            </p>
+                        <div>
+                           <div className="font-bold mb-1">Add Flopcoast Protect+</div>
+                           <p className="text-sm text-silver-500 mb-2">Full coverage for cancellation, medical emergencies, and baggage.</p>
+                           <p className="text-xs font-bold text-green-600">See coverage limits in policy</p>
+                        </div>
+                        <div className="ml-auto font-bold">
+                           ${(45 * criteria.passengers).toFixed(2)}
                         </div>
                      </div>
                   </label>
                </div>
             </div>
+            
+            <div className="bg-silver-50 dark:bg-zinc-950 p-6 rounded-[2rem] border border-silver-200 dark:border-zinc-800">
+               <h3 className="font-bold mb-4">Passenger Information</h3>
+               <div className="space-y-4">
+                  {[...Array(criteria.passengers)].map((_, idx) => (
+                      <div key={idx} className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-silver-200 dark:border-zinc-800">
+                         <h4 className="text-xs font-bold uppercase text-silver-400 mb-3">Passenger {idx + 1} (Adult)</h4>
+                         <div className="grid md:grid-cols-2 gap-4">
+                            <input type="text" placeholder="Full Name" className="bg-silver-50 dark:bg-zinc-950 p-3 rounded-lg text-sm border-transparent focus:border-black dark:focus:border-white outline-none border" />
+                            <input type="text" placeholder="Passport Number" className="bg-silver-50 dark:bg-zinc-950 p-3 rounded-lg text-sm border-transparent focus:border-black dark:focus:border-white outline-none border" />
+                         </div>
+                      </div>
+                  ))}
+               </div>
+            </div>
           </div>
 
-          {/* Price Breakdown */}
+          {/* Price Summary */}
           <div className="lg:col-span-1">
-             <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-silver-200 dark:border-zinc-800 sticky top-32">
-                <h3 className="font-bold text-xl mb-6">Price Breakdown</h3>
-                <div className="space-y-4 mb-8">
+             <div className="sticky top-32 bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-silver-200 dark:border-zinc-800 shadow-xl">
+                <h3 className="text-xl font-display font-bold mb-6">Price Summary</h3>
+                <div className="space-y-4 mb-6">
                    <div className="flex justify-between text-sm">
-                      <span className="text-silver-500">Flight x {criteria.passengers}</span>
-                      <span className="font-medium">${baseTotal}</span>
-                   </div>
-                   <div className="flex justify-between text-sm">
-                      <span className="text-silver-500">Seat Selection</span>
-                      <span className="font-medium">${seatsTotal}</span>
+                      <span className="text-silver-500">{criteria.passengers} x {selectedFlight.cabinClass} Flight</span>
+                      <span className="font-medium">${baseTotal.toFixed(2)}</span>
                    </div>
                    <div className="flex justify-between text-sm">
                       <span className="text-silver-500">Taxes & Fees</span>
-                      <span className="font-medium">${taxes}</span>
+                      <span className="font-medium">${taxes.toFixed(2)}</span>
                    </div>
                    {addInsurance && (
-                     <div className="flex justify-between text-sm text-green-600">
-                        <span>Trip Insurance</span>
-                        <span className="font-medium">+${insuranceTotal}</span>
-                     </div>
+                      <div className="flex justify-between text-sm text-green-600">
+                         <span>Trip Insurance</span>
+                         <span className="font-medium">+${insuranceTotal.toFixed(2)}</span>
+                      </div>
                    )}
-                   {pointsRedeemed > 0 && (
-                     <div className="flex justify-between text-sm text-green-600">
-                        <span>Points Discount</span>
-                        <span className="font-medium">-${discount.toFixed(2)}</span>
-                     </div>
+                   {seatPrice > 0 && (
+                      <div className="flex justify-between text-sm">
+                          <span className="text-silver-500">Seat Selection</span>
+                          <span className="font-medium">+${seatsTotal.toFixed(2)}</span>
+                      </div>
                    )}
-                   <div className="pt-4 border-t border-silver-200 dark:border-zinc-800 flex justify-between items-end">
-                      <span className="font-bold text-lg">Total</span>
-                      <span className="font-display font-bold text-4xl">${grandTotal.toFixed(2)}</span>
+                   {discount > 0 && (
+                       <div className="flex justify-between text-sm text-green-600">
+                           <span>Points Discount</span>
+                           <span className="font-medium">-${discount.toFixed(2)}</span>
+                       </div>
+                   )}
+                </div>
+                
+                <div className="pt-6 border-t border-silver-100 dark:border-zinc-800 mb-8">
+                   <div className="flex justify-between items-end">
+                      <span className="text-sm font-bold uppercase text-silver-400">Total</span>
+                      <span className="text-3xl font-display font-bold">${grandTotal.toFixed(2)}</span>
                    </div>
                 </div>
+
                 <button 
                   onClick={handleConfirmBooking}
-                  className="w-full py-4 bg-black dark:bg-white text-white dark:text-black rounded-xl font-bold text-lg shadow-xl hover:scale-[1.02] transition-transform"
+                  className="w-full bg-black dark:bg-white text-white dark:text-black py-4 rounded-xl font-bold text-lg hover:scale-[1.02] transition-transform shadow-lg"
                 >
-                   Complete Booking
+                   Pay & Confirm
                 </button>
              </div>
           </div>
@@ -410,606 +442,345 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack, user })
     );
   }
 
-  // --- Search Results View ---
+  // --- Comparison Modal ---
+  const ComparisonModal = () => {
+     // Calculate max duration for visualization
+     const maxDuration = Math.max(...selectedForComparison.map(f => parseDuration(f.duration)));
+
+     return (
+     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+         <div className="bg-white dark:bg-zinc-900 w-full max-w-5xl h-[80vh] rounded-[2.5rem] p-8 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 slide-in-from-bottom-8">
+             <div className="flex justify-between items-center mb-6 shrink-0">
+                 <h2 className="text-2xl font-bold font-display">Compare Flights</h2>
+                 <button onClick={() => setIsComparisonModalOpen(false)} className="p-2 hover:bg-silver-100 dark:hover:bg-zinc-800 rounded-full"><X/></button>
+             </div>
+             
+             <div className="flex-1 overflow-x-auto">
+                 <div className="grid grid-cols-4 gap-4 min-w-[800px]">
+                     {/* Labels Column */}
+                     <div className="space-y-4 pt-48 text-sm font-bold text-silver-500">
+                         <div className="h-12 flex items-center">Price</div>
+                         <div className="h-16 flex items-center">Travel Time</div>
+                         <div className="h-12 flex items-center">Schedule</div>
+                         <div className="h-12 flex items-center">Cabin Class</div>
+                         <div className="h-12 flex items-center">Aircraft</div>
+                         <div className="h-20 flex items-center">Baggage</div>
+                         <div className="h-32 flex items-start pt-4">Amenities</div>
+                     </div>
+
+                     {/* Flight Columns */}
+                     {selectedForComparison.map(flight => (
+                         <div key={flight.id} className="space-y-4 bg-silver-50 dark:bg-zinc-950 p-4 rounded-2xl border border-silver-200 dark:border-zinc-800">
+                             <div className="h-40 flex flex-col justify-between mb-4">
+                                 <div className="font-bold text-lg">{flight.airline}</div>
+                                 <div className="text-xs text-silver-500">{flight.flightNumber}</div>
+                                 <button onClick={() => { setIsComparisonModalOpen(false); handleBookClick(flight); }} className="w-full py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg text-sm font-bold">Select</button>
+                             </div>
+                             
+                             <div className="h-12 flex items-center font-display font-bold text-xl">${getDynamicPrice(flight.price, cabinFilter)}</div>
+                             
+                             {/* Enhanced Travel Time with Visual Bar */}
+                             <div className="h-16 flex flex-col justify-center">
+                                 <div className="font-bold flex items-center gap-2">
+                                     <Clock size={14} className="text-silver-400"/> {flight.duration}
+                                 </div>
+                                 <div className="w-full bg-silver-200 dark:bg-zinc-800 rounded-full h-1.5 mt-2 overflow-hidden">
+                                     <div 
+                                        className="bg-black dark:bg-white h-full rounded-full" 
+                                        style={{ width: `${(parseDuration(flight.duration) / maxDuration) * 100}%` }}
+                                     ></div>
+                                 </div>
+                             </div>
+
+                             <div className="h-12 flex items-center text-sm">{flight.departureTime} - {flight.arrivalTime}</div>
+                             <div className="h-12 flex items-center text-sm font-bold">{flight.cabinClass}</div>
+                             <div className="h-12 flex items-center text-sm">{flight.aircraft}</div>
+                             <div className="h-20 flex items-center text-xs leading-relaxed">{flight.baggage}</div>
+                             <div className="h-32 pt-4">
+                                 <div className="grid grid-cols-2 gap-2">
+                                     {flight.amenities.map(a => (
+                                         <div key={a} className="text-[10px] bg-white dark:bg-zinc-900 px-2 py-1 rounded border border-silver-100 dark:border-zinc-800 text-center">{a}</div>
+                                     ))}
+                                 </div>
+                             </div>
+                         </div>
+                     ))}
+                 </div>
+             </div>
+         </div>
+     </div>
+  )};
+
   return (
-    <div className="min-h-screen pt-32 pb-24 px-6 md:px-12 max-w-[1920px] mx-auto animate-in fade-in duration-500 relative">
+    <div className="min-h-screen pt-32 pb-12 px-6 md:px-12 max-w-[1920px] mx-auto animate-in fade-in slide-in-from-right-8">
+      {isComparisonModalOpen && <ComparisonModal />}
       
-      {/* Search Header & Sorting */}
-      <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-end mb-12">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
           <button onClick={onBack} className="flex items-center gap-2 text-silver-500 hover:text-black dark:hover:text-white mb-4 transition-colors">
-            <ArrowLeft size={18} /> Back
+            <ArrowLeft size={20} /> Back to Search
           </button>
-          <h1 className="text-4xl font-display font-bold">
-            Select your flight
-          </h1>
-          <p className="text-silver-500 mt-2">
-            Showing results for <strong className="text-black dark:text-white">{criteria.from || 'Origin'}</strong> to <strong className="text-black dark:text-white">{criteria.to || 'Destination'}</strong>
+          <h2 className="text-3xl font-display font-bold">
+            {criteria.from ? `Flights from ${criteria.from.split(' ')[0]} to ${criteria.to.split(' ')[0]}` : `Search Results`}
+          </h2>
+          <p className="text-silver-500">
+            {filteredAndSortedResults.length} flights found • {criteria.date} • {criteria.passengers} Passenger(s)
           </p>
         </div>
 
-        {/* Sort Dropdown */}
         <div className="flex items-center gap-3">
-             <span className="text-xs font-bold uppercase tracking-wider text-silver-400">Sort by:</span>
-             <select 
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="bg-white dark:bg-zinc-900 border border-silver-200 dark:border-zinc-800 text-sm font-medium rounded-xl px-4 py-2 outline-none focus:border-black dark:focus:border-white transition-colors"
-             >
-                <option value="price_asc">Price (Lowest)</option>
-                <option value="duration_asc">Duration (Fastest)</option>
-                <option value="departure_asc">Departure Time (Earliest)</option>
-                <option value="arrival_asc">Arrival Time (Earliest)</option>
-             </select>
+             {selectedForComparison.length > 0 && (
+                 <button 
+                    onClick={() => setIsComparisonModalOpen(true)}
+                    className="flex items-center gap-2 px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-full font-bold shadow-lg hover:scale-105 transition-transform animate-in zoom-in"
+                 >
+                     <Columns size={16} /> Compare ({selectedForComparison.length})
+                 </button>
+             )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="grid lg:grid-cols-4 gap-8">
         
-        {/* Filters Sidebar - Hide on small screens usually, kept simple here */}
+        {/* Filters Sidebar */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white dark:bg-zinc-900 p-6 rounded-[2rem] border border-silver-200 dark:border-zinc-800 sticky top-32">
-              <div className="flex items-center justify-between mb-6">
-                 <div className="flex items-center gap-2">
-                   <Filter size={20} />
-                   <h3 className="text-xl font-bold font-display">Filters</h3>
-                 </div>
-                 <button onClick={resetFilters} className="text-xs font-semibold text-silver-500 hover:text-black dark:hover:text-white flex items-center gap-1">
-                    <RotateCcw size={12} /> Reset
-                 </button>
+          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] p-6 border border-silver-200 dark:border-zinc-800 sticky top-32">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-bold flex items-center gap-2"><Filter size={18} /> Filters</h3>
+              <button onClick={resetFilters} className="text-xs font-bold underline">Reset</button>
+            </div>
+
+            {/* Price Filter */}
+            <div className="mb-6">
+              <label className="text-xs font-bold uppercase text-silver-400 mb-2 block">Max Price</label>
+              <div className="flex justify-between text-sm font-bold mb-2">
+                 <span>$0</span>
+                 <span>${maxPrice}</span>
               </div>
-              
-              <div className="space-y-8">
-                {/* Price Filter */}
-                <div>
-                    <label className="text-xs font-bold uppercase tracking-wider text-silver-400 mb-4 block">Max Price</label>
-                    <input 
-                      type="range" 
-                      min="100" 
-                      max="10000" 
-                      value={maxPrice} 
-                      onChange={(e) => setMaxPrice(parseInt(e.target.value))}
-                      className="w-full accent-black dark:accent-white h-2 bg-silver-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer"
-                    />
-                    <div className="flex justify-between text-sm font-medium mt-2">
-                      <span>$100</span>
-                      <span>${maxPrice.toLocaleString()}</span>
-                    </div>
-                </div>
+              <input 
+                type="range" 
+                min="0" 
+                max="5000" 
+                step="100"
+                value={maxPrice} 
+                onChange={(e) => setMaxPrice(parseInt(e.target.value))}
+                className="w-full accent-black dark:accent-white"
+              />
+            </div>
 
-                {/* Cabin Class Filter */}
-                <div>
-                   <label className="text-xs font-bold uppercase tracking-wider text-silver-400 mb-4 flex items-center gap-2">
-                      <Armchair size={14} /> Cabin Class
-                   </label>
-                   <div className="space-y-2">
-                      {['all', 'Economy', 'Premium Economy', 'Business', 'First Class'].map(opt => (
-                         <label key={opt} className="flex items-center gap-3 cursor-pointer group">
-                            <input 
-                               type="radio" 
-                               name="cabin" 
-                               checked={cabinFilter === opt}
-                               onChange={() => setCabinFilter(opt as CabinFilter)}
-                               className="accent-black dark:accent-white"
-                            />
-                            <span className="text-sm font-medium group-hover:text-black dark:group-hover:text-white transition-colors">
-                               {opt === 'all' ? 'Any Class' : opt}
-                            </span>
-                         </label>
-                      ))}
-                   </div>
-                </div>
+            {/* Cabin Class Filter - NEW */}
+            <div className="mb-6">
+               <label className="text-xs font-bold uppercase text-silver-400 mb-3 block">Cabin Class</label>
+               <div className="space-y-2">
+                  {(['all', 'Economy', 'Premium Economy', 'Business', 'First Class'] as const).map(option => (
+                      <label key={option} className="flex items-center gap-3 cursor-pointer group">
+                          <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${cabinFilter === option ? 'border-black dark:border-white' : 'border-silver-300'}`}>
+                              {cabinFilter === option && <div className="w-2.5 h-2.5 bg-black dark:bg-white rounded-full"></div>}
+                          </div>
+                          <input 
+                             type="radio" 
+                             name="cabin" 
+                             className="hidden" 
+                             checked={cabinFilter === option} 
+                             onChange={() => setCabinFilter(option)} 
+                          />
+                          <span className={`text-sm font-medium ${cabinFilter === option ? 'text-black dark:text-white' : 'text-silver-500'}`}>
+                              {option === 'all' ? 'Any Class' : option}
+                          </span>
+                      </label>
+                  ))}
+               </div>
+            </div>
 
-                {/* Stops Filter */}
-                <div>
-                    <label className="text-xs font-bold uppercase tracking-wider text-silver-400 mb-4 block">Stops</label>
-                    <div className="flex gap-2">
-                      {['all', '0', '1', '2+'].map(opt => (
-                        <button 
-                          key={opt}
-                          onClick={() => setStopsFilter(opt as StopsFilter)}
-                          className={`flex-1 py-2 rounded-lg text-[10px] md:text-xs font-medium border transition-all ${stopsFilter === opt ? 'bg-black text-white dark:bg-white dark:text-black border-transparent shadow-md' : 'border-silver-200 dark:border-zinc-700 hover:bg-silver-50 dark:hover:bg-zinc-800'}`}
-                        >
-                            {opt === 'all' ? 'Any' : opt === '0' ? 'Non-stop' : opt === '1' ? '1 Stop' : '2+ Stops'}
-                        </button>
-                      ))}
-                    </div>
-                </div>
-
-                {/* Departure Time Filter */}
-                <div>
-                    <label className="text-xs font-bold uppercase tracking-wider text-silver-400 mb-4 flex items-center gap-2">
-                      <Clock size={14} /> Departure Time
-                    </label>
-                    <div className="space-y-2">
-                      {[
-                        { id: 'all', label: 'Any Time' },
-                        { id: 'morning', label: 'Morning (5AM - 12PM)' },
-                        { id: 'afternoon', label: 'Afternoon (12PM - 6PM)' },
-                        { id: 'evening', label: 'Evening (6PM - 5AM)' }
-                      ].map(opt => (
-                        <button 
-                          key={opt.id}
-                          onClick={() => setTimeFilter(opt.id as TimeFilter)}
-                          className={`w-full text-left py-2 px-3 rounded-lg text-sm font-medium border transition-all ${timeFilter === opt.id ? 'bg-black text-white dark:bg-white dark:text-black border-transparent' : 'border-silver-200 dark:border-zinc-700 hover:bg-silver-50 dark:hover:bg-zinc-800'}`}
-                        >
-                            {opt.label}
-                        </button>
-                      ))}
-                    </div>
-                </div>
+            {/* Stops Filter */}
+            <div className="mb-6">
+              <label className="text-xs font-bold uppercase text-silver-400 mb-3 block">Stops</label>
+              <div className="flex gap-2">
+                {(['all', '0', '1', '2+'] as const).map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => setStopsFilter(opt)}
+                    className={`flex-1 py-2 text-xs font-bold rounded-lg border ${stopsFilter === opt ? 'bg-black text-white dark:bg-white dark:text-black border-transparent' : 'border-silver-200 dark:border-zinc-800 text-silver-500 hover:border-black dark:hover:border-white'}`}
+                  >
+                    {opt === 'all' ? 'Any' : opt}
+                  </button>
+                ))}
               </div>
+            </div>
+
+             {/* Time Filter */}
+             <div className="mb-6">
+                <label className="text-xs font-bold uppercase text-silver-400 mb-3 block">Departure Time</label>
+                <div className="grid grid-cols-2 gap-2">
+                    <button onClick={() => setTimeFilter('morning')} className={`p-2 text-xs font-bold rounded-lg border text-center ${timeFilter === 'morning' ? 'bg-black text-white dark:bg-white dark:text-black' : 'border-silver-200 dark:border-zinc-800'}`}>Morning</button>
+                    <button onClick={() => setTimeFilter('afternoon')} className={`p-2 text-xs font-bold rounded-lg border text-center ${timeFilter === 'afternoon' ? 'bg-black text-white dark:bg-white dark:text-black' : 'border-silver-200 dark:border-zinc-800'}`}>Afternoon</button>
+                    <button onClick={() => setTimeFilter('evening')} className={`p-2 text-xs font-bold rounded-lg border text-center ${timeFilter === 'evening' ? 'bg-black text-white dark:bg-white dark:text-black' : 'border-silver-200 dark:border-zinc-800'}`}>Evening</button>
+                    <button onClick={() => setTimeFilter('all')} className={`p-2 text-xs font-bold rounded-lg border text-center ${timeFilter === 'all' ? 'bg-black text-white dark:bg-white dark:text-black' : 'border-silver-200 dark:border-zinc-800'}`}>Any Time</button>
+                </div>
+             </div>
+
+             {/* Airline Filter */}
+             <div className="mb-6">
+                <label className="text-xs font-bold uppercase text-silver-400 mb-3 block">Airlines</label>
+                <div className="space-y-2">
+                   {availableAirlines.map(airline => (
+                      <label key={airline} className="flex items-center gap-3 cursor-pointer">
+                          <input 
+                             type="checkbox" 
+                             checked={selectedAirlines.includes(airline)}
+                             onChange={() => toggleAirline(airline)}
+                             className="hidden"
+                          />
+                          <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${selectedAirlines.includes(airline) ? 'bg-black dark:bg-white border-black dark:border-white' : 'border-silver-300'}`}>
+                             {selectedAirlines.includes(airline) && <Check size={12} className="text-white dark:text-black"/>}
+                          </div>
+                          <span className="text-sm text-silver-600 dark:text-silver-300">{airline}</span>
+                      </label>
+                   ))}
+                </div>
+             </div>
+
           </div>
         </div>
 
         {/* Results List */}
         <div className="lg:col-span-3 space-y-4">
-          {filteredAndSortedResults.length === 0 ? (
-             <div className="text-center py-20 bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-silver-200 dark:border-zinc-800">
-                <Info size={48} className="mx-auto text-silver-300 mb-4"/>
-                <h3 className="text-xl font-bold">No flights found</h3>
-                <p className="text-silver-500">We only fly our friendly skies. Try adjusting your filters.</p>
+          
+          {/* Sorting Bar */}
+          <div className="flex justify-end mb-4">
+             <div className="flex items-center gap-3">
+                 <span className="text-sm font-bold text-silver-400">Sort by:</span>
+                 <select 
+                    value={sortBy} 
+                    onChange={(e) => setSortBy(e.target.value as SortOption)}
+                    className="bg-white dark:bg-zinc-900 border border-silver-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm font-bold outline-none cursor-pointer"
+                 >
+                     <option value="price_asc">Lowest Price</option>
+                     <option value="duration_asc">Shortest Duration</option>
+                     <option value="departure_asc">Departure Time</option>
+                     <option value="arrival_asc">Arrival Time</option>
+                 </select>
              </div>
-          ) : (
+          </div>
+
+          {filteredAndSortedResults.length > 0 ? (
             filteredAndSortedResults.map((flight) => (
-              <div key={flight.id} className="group bg-white dark:bg-zinc-900 p-6 md:p-8 rounded-[2.5rem] border border-silver-200 dark:border-zinc-800 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_20px_40px_-10px_rgba(255,255,255,0.05)] transition-all duration-300 relative">
+              <div key={flight.id} className="bg-white dark:bg-zinc-900 rounded-[2rem] p-6 border border-silver-200 dark:border-zinc-800 hover:shadow-lg transition-all group relative">
                 
                 {/* Compare Checkbox */}
-                <div className="absolute top-6 right-6 lg:right-auto lg:left-6">
-                    <label className="flex items-center gap-2 cursor-pointer bg-silver-50 dark:bg-zinc-950 px-3 py-1.5 rounded-full border border-silver-200 dark:border-zinc-700 hover:border-black dark:hover:border-white transition-colors">
+                <div className="absolute top-6 left-6 z-10">
+                    <label className="flex items-center gap-2 cursor-pointer group/compare">
+                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${selectedForComparison.find(f => f.id === flight.id) ? 'bg-black dark:bg-white border-black dark:border-white' : 'border-silver-300 bg-white/50 dark:bg-black/50'}`}>
+                             {selectedForComparison.find(f => f.id === flight.id) && <Check size={12} className="text-white dark:text-black"/>}
+                        </div>
                         <input 
-                            type="checkbox"
-                            checked={!!selectedForComparison.find(f => f.id === flight.id)}
-                            onChange={() => toggleComparison(flight)}
-                            disabled={!selectedForComparison.find(f => f.id === flight.id) && selectedForComparison.length >= 3}
-                            className="accent-black dark:accent-white"
+                           type="checkbox" 
+                           className="hidden"
+                           checked={!!selectedForComparison.find(f => f.id === flight.id)}
+                           onChange={() => toggleComparison(flight)}
                         />
-                        <span className="text-xs font-bold text-silver-500">Compare</span>
+                        <span className="text-xs font-bold text-silver-400 opacity-0 group-hover/compare:opacity-100 transition-opacity">Compare</span>
                     </label>
                 </div>
 
-                <div className="flex flex-col md:flex-row justify-between gap-6 pt-8 lg:pt-0 lg:pl-20">
-                    
-                    {/* Flight Info */}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-4 mb-4">
-                          <div className="font-bold text-lg">{flight.airline}</div>
-                          <span className="text-xs bg-silver-100 dark:bg-zinc-800 px-2 py-1 rounded text-silver-500 border border-silver-200 dark:border-zinc-700 flex items-center gap-1">
-                             <Plane size={10} /> {flight.aircraft}
-                          </span>
-                          <span className="text-xs bg-black text-white dark:bg-white dark:text-black px-2 py-1 rounded font-bold">{flight.cabinClass}</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-8 md:gap-12">
-                          <div>
-                            <div className="text-2xl font-bold font-display">{flight.departureTime}</div>
-                            <div className="text-sm text-silver-500">{flight.origin}</div>
-                          </div>
-                          
-                          <div className="flex-1 flex flex-col items-center">
-                            <div className="text-xs text-silver-400 mb-1">{flight.duration}</div>
-                            <div className="w-full h-[2px] bg-silver-200 dark:bg-zinc-700 relative flex items-center justify-center">
-                                <div className="absolute w-2 h-2 rounded-full bg-black dark:bg-white left-0"></div>
-                                <div className="absolute w-2 h-2 rounded-full bg-black dark:bg-white right-0"></div>
-                                <Plane size={14} className="text-silver-400 rotate-90" />
-                            </div>
-                            <div className="text-xs text-silver-400 mt-1">{flight.stops === 0 ? 'Non-stop' : flight.stops === 1 ? '1 stop' : `${flight.stops} stops`}</div>
-                            
-                            {/* Layover Estimation */}
-                            {flight.stops > 0 && flight.layoverDuration && (
-                                <div className="text-[10px] text-silver-400 bg-silver-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full mt-1">
-                                    Layover: {flight.layoverDuration}
-                                </div>
-                            )}
-                          </div>
-
-                          <div className="text-right">
-                            <div className="text-2xl font-bold font-display">{flight.arrivalTime}</div>
-                            <div className="text-sm text-silver-500">{flight.destination}</div>
-                          </div>
-                      </div>
-
-                      {/* Snippets (Baggage & Amenities) */}
-                      <div className="mt-6 pt-4 border-t border-silver-100 dark:border-zinc-800">
-                          <div className="text-[10px] font-bold uppercase tracking-wider text-silver-400 mb-2">Included Amenities</div>
-                          <div className="flex flex-wrap gap-3">
-                              <span className="text-xs bg-silver-50 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-silver-100 dark:border-zinc-700 text-silver-600 dark:text-silver-300 flex items-center gap-2">
-                                  <Luggage size={14} className="text-silver-400"/> {flight.baggage}
-                              </span>
-                              {flight.amenities.map(item => {
-                                  let Icon = Check;
-                                  if (item.toLowerCase().includes('wifi')) Icon = Wifi;
-                                  if (item.toLowerCase().includes('meal')) Icon = Coffee;
-                                  if (item.toLowerCase().includes('power')) Icon = Zap;
-                                  if (item.toLowerCase().includes('tv') || item.toLowerCase().includes('stream')) Icon = Tv;
-                                  
-                                  return (
-                                    <span key={item} className="text-xs bg-silver-50 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-silver-100 dark:border-zinc-700 text-silver-600 dark:text-silver-300 flex items-center gap-2">
-                                        <Icon size={14} className={
-                                            item.toLowerCase().includes('wifi') ? 'text-blue-500' :
-                                            item.toLowerCase().includes('meal') ? 'text-orange-500' :
-                                            'text-silver-400'
-                                        } /> 
-                                        {item}
-                                    </span>
-                                  );
-                              })}
-                          </div>
-                      </div>
+                <div className="flex flex-col md:flex-row justify-between gap-6 pl-8">
+                  {/* Flight Info */}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-4 mb-4">
+                       <span className="text-sm font-bold">{flight.airline}</span>
+                       <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-silver-100 dark:bg-zinc-800 uppercase tracking-wide">{flight.aircraft}</span>
                     </div>
 
-                    {/* Price & Action */}
-                    <div className="flex flex-col justify-between items-end gap-4 min-w-[180px] border-l border-silver-100 dark:border-zinc-800 pl-6">
+                    <div className="flex items-center gap-8 md:gap-16">
+                      <div>
+                        <div className="text-2xl font-display font-bold">{flight.departureTime}</div>
+                        <div className="text-sm text-silver-500 font-medium">{flight.origin.split(' ')[0]}</div>
+                      </div>
+
+                      <div className="flex-1 flex flex-col items-center">
+                        <div className="text-xs text-silver-400 mb-1">{flight.duration}</div>
+                        <div className="w-full h-[2px] bg-silver-200 dark:bg-zinc-700 relative">
+                          <Plane className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-90 text-silver-300 dark:text-zinc-600" size={14} fill="currentColor" />
+                        </div>
+                        <div className="text-xs text-silver-500 mt-1 font-medium text-center">
+                            {flight.stops === 0 ? 'Non-stop' : `${flight.stops} Stop${flight.stops > 1 ? 's' : ''}`}
+                            {flight.layoverDuration && <span className="text-orange-500 block">{flight.layoverDuration} layover</span>}
+                        </div>
+                        {/* New Baggage Display */}
+                        <div className="mt-2 flex items-center gap-1 text-[10px] font-bold text-silver-500 bg-silver-50 dark:bg-zinc-800 px-2 py-1 rounded-md border border-silver-100 dark:border-zinc-700">
+                            <Luggage size={10} /> {flight.baggage}
+                        </div>
+                      </div>
+
                       <div className="text-right">
-                          <div className="text-3xl font-bold font-display flex items-center justify-end gap-2">
-                             ${flight.price}
-                             
-                             {/* Price Trend Indicator */}
-                             {flight.priceTrend === 'up' && (
-                                <div className="bg-red-100 dark:bg-red-900/30 p-1 rounded-full text-red-600" title="Price Rising">
-                                   <ArrowUpRight size={14} />
-                                </div>
-                             )}
-                             {flight.priceTrend === 'down' && (
-                                <div className="bg-green-100 dark:bg-green-900/30 p-1 rounded-full text-green-600" title="Price Dropping">
-                                   <ArrowDownRight size={14} />
-                                </div>
-                             )}
-                          </div>
-                          <div className="text-xs text-silver-500">per person</div>
-                      </div>
-                      
-                      <div className="flex flex-col gap-2 w-full">
-                          <button 
-                            onClick={() => handleBookClick(flight)}
-                            className="w-full py-3 bg-black dark:bg-white text-white dark:text-black rounded-xl font-bold text-sm hover:scale-105 transition-transform shadow-lg"
-                          >
-                            Select Flight
-                          </button>
+                        <div className="text-2xl font-display font-bold">{flight.arrivalTime}</div>
+                        <div className="text-sm text-silver-500 font-medium">{flight.destination.split(' ')[0]}</div>
                       </div>
                     </div>
+                    
+                    {/* Amenities Section - Styled */}
+                    <div className="mt-6 flex flex-wrap gap-2">
+                         {flight.amenities.includes('WiFi') && (
+                             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-silver-50 dark:bg-zinc-950 rounded-lg border border-silver-100 dark:border-zinc-800 text-xs font-semibold text-silver-600 dark:text-silver-400">
+                                 <Wifi size={12} /> <span>Wi-Fi</span>
+                             </div>
+                         )}
+                         {flight.amenities.includes('Meals') && (
+                             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-silver-50 dark:bg-zinc-950 rounded-lg border border-silver-100 dark:border-zinc-800 text-xs font-semibold text-silver-600 dark:text-silver-400">
+                                 <Coffee size={12} /> <span>Meal</span>
+                             </div>
+                         )}
+                         {flight.amenities.includes('USB Power') && (
+                             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-silver-50 dark:bg-zinc-950 rounded-lg border border-silver-100 dark:border-zinc-800 text-xs font-semibold text-silver-600 dark:text-silver-400">
+                                 <Zap size={12} /> <span>Power</span>
+                             </div>
+                         )}
+                         <div className="flex items-center gap-1.5 px-3 py-1.5 bg-silver-50 dark:bg-zinc-950 rounded-lg border border-silver-100 dark:border-zinc-800 text-xs font-semibold text-silver-600 dark:text-silver-400">
+                              <span className="w-2 h-2 rounded-full bg-black dark:bg-white"></span> {flight.cabinClass}
+                         </div>
+                    </div>
+                  </div>
+
+                  {/* Price & Action */}
+                  <div className="flex flex-col justify-between items-end min-w-[140px] border-l border-silver-100 dark:border-zinc-800 pl-6">
+                    <div className="text-right">
+                       <span className="text-3xl font-display font-bold">${flight.price}</span>
+                       <div className="text-xs text-silver-400">per person</div>
+                       {flight.priceTrend === 'down' && (
+                           <div className="flex items-center justify-end gap-1 text-xs font-bold text-green-600 mt-1">
+                               <ArrowDownRight size={12} /> Price Drop
+                           </div>
+                       )}
+                       {flight.priceTrend === 'up' && (
+                           <div className="flex items-center justify-end gap-1 text-xs font-bold text-red-500 mt-1">
+                               <ArrowUpRight size={12} /> Rising Fast
+                           </div>
+                       )}
+                    </div>
+                    
+                    <button 
+                      onClick={() => handleBookClick(flight)}
+                      className="w-full bg-black dark:bg-white text-white dark:text-black py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg mt-4"
+                    >
+                      Select
+                    </button>
+                  </div>
                 </div>
               </div>
             ))
+          ) : (
+            <div className="text-center py-20 bg-white dark:bg-zinc-900 rounded-[2rem] border border-silver-200 dark:border-zinc-800">
+              <Plane size={48} className="mx-auto text-silver-300 mb-4" />
+              <h3 className="text-xl font-bold mb-2">No flights found</h3>
+              <p className="text-silver-500">Try adjusting your filters or dates.</p>
+              <button onClick={resetFilters} className="mt-4 text-sm font-bold underline">Clear all filters</button>
+            </div>
           )}
         </div>
       </div>
-
-      {/* Comparison Floating Bar */}
-      {selectedForComparison.length > 0 && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-black dark:bg-white text-white dark:text-black p-4 rounded-full shadow-2xl z-50 flex items-center gap-6 animate-in slide-in-from-bottom-10">
-              <div className="pl-2 font-bold flex items-center gap-2">
-                  <Columns size={18} />
-                  {selectedForComparison.length} / 3 Selected
-              </div>
-              <div className="h-4 w-[1px] bg-white/30 dark:bg-black/30"></div>
-              <button 
-                  onClick={() => setSelectedForComparison([])}
-                  className="text-xs hover:underline opacity-80"
-              >
-                  Clear
-              </button>
-              <button 
-                  onClick={() => setIsComparisonModalOpen(true)}
-                  className="bg-white dark:bg-black text-black dark:text-white px-6 py-2 rounded-full font-bold text-sm hover:scale-105 transition-transform"
-              >
-                  Compare Now
-              </button>
-          </div>
-      )}
-
-      {/* Comparison Modal */}
-      {isComparisonModalOpen && (
-          <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-md flex items-center justify-center p-4">
-              <div className="bg-white dark:bg-zinc-900 w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] p-8 shadow-2xl relative animate-in zoom-in-95">
-                  <button 
-                      onClick={() => setIsComparisonModalOpen(false)}
-                      className="absolute top-6 right-6 p-2 hover:bg-silver-100 dark:hover:bg-zinc-800 rounded-full"
-                  >
-                      <X size={24} />
-                  </button>
-                  
-                  <h2 className="text-3xl font-display font-bold mb-8">Flight Comparison</h2>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      {selectedForComparison.map((flight) => (
-                          <div key={flight.id} className="border border-silver-200 dark:border-zinc-800 rounded-2xl p-6 bg-silver-50 dark:bg-zinc-950 flex flex-col h-full">
-                              <div className="mb-6 pb-6 border-b border-silver-200 dark:border-zinc-800">
-                                  <div className="text-2xl font-display font-bold mb-2">${getDynamicPrice(flight.price, cabinFilter)}</div>
-                                  <div className="font-bold text-lg">{flight.airline}</div>
-                                  <div className="text-sm text-silver-500">{flight.flightNumber}</div>
-                              </div>
-                              
-                              <div className="space-y-6 flex-1">
-                                  <div>
-                                      <div className="text-xs uppercase font-bold text-silver-400 mb-1">Time</div>
-                                      <div className="font-semibold">{flight.departureTime} - {flight.arrivalTime}</div>
-                                      <div className="text-sm text-silver-500">{flight.duration}</div>
-                                  </div>
-                                  
-                                  {/* NEW: Travel Time Comparison */}
-                                  <div>
-                                      <div className="text-xs uppercase font-bold text-silver-400 mb-1">Travel Time</div>
-                                      <div className="flex items-center gap-2">
-                                         <Clock size={14} className="text-silver-400"/>
-                                         <span className="font-bold">{flight.duration}</span>
-                                      </div>
-                                  </div>
-
-                                  <div>
-                                      <div className="text-xs uppercase font-bold text-silver-400 mb-1">Stops</div>
-                                      <div className="font-semibold">{flight.stops === 0 ? 'Non-stop' : `${flight.stops} Stop(s)`}</div>
-                                      {flight.layoverDuration && <div className="text-xs text-silver-500">Layover: {flight.layoverDuration}</div>}
-                                  </div>
-                                  <div>
-                                      <div className="text-xs uppercase font-bold text-silver-400 mb-1">Class</div>
-                                      <div className="font-semibold">{cabinFilter !== 'all' ? cabinFilter : flight.cabinClass}</div>
-                                  </div>
-                                  <div>
-                                      <div className="text-xs uppercase font-bold text-silver-400 mb-1">Aircraft</div>
-                                      <div className="font-semibold">{flight.aircraft}</div>
-                                  </div>
-                                  <div>
-                                      <div className="text-xs uppercase font-bold text-silver-400 mb-1">Baggage</div>
-                                      <div className="font-semibold text-sm">{flight.baggage}</div>
-                                  </div>
-                                  <div>
-                                      <div className="text-xs uppercase font-bold text-silver-400 mb-2">Amenities</div>
-                                      <div className="flex flex-wrap gap-2">
-                                          {flight.amenities.map(a => (
-                                              <span key={a} className="text-xs bg-white dark:bg-zinc-800 px-2 py-1 rounded border border-silver-200 dark:border-zinc-700">
-                                                  {a}
-                                              </span>
-                                          ))}
-                                      </div>
-                                  </div>
-                              </div>
-                              
-                              <button 
-                                  onClick={() => {
-                                      handleBookClick(flight);
-                                      setIsComparisonModalOpen(false);
-                                  }}
-                                  className="w-full mt-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-xl font-bold"
-                              >
-                                  Select
-                              </button>
-                          </div>
-                      ))}
-                  </div>
-              </div>
-          </div>
-      )}
-
     </div>
   );
-};
-
-// Seat Selection Component with Cabin Layout
-const SeatSelection: React.FC<{ flight: FlightResult; onSelect: (seat: string, price: number) => void; onBack: () => void }> = ({ flight, onSelect, onBack }) => {
-   const [selectedSeat, setSelectedSeat] = useState<string | null>(null);
-   const [currentSeatPrice, setCurrentSeatPrice] = useState(0);
-
-   const businessRows = [1, 2, 3];
-   const economyRows = [10, 11, 12, 13, 14, 15];
-
-   // Mock occupied seats
-   const occupiedSeats = ['1A', '2C', '10F', '11A', '12B', '14D'];
-
-   const getSeatPrice = (seat: string) => {
-       const row = parseInt(seat.replace(/\D/g, ''));
-       if (row < 10) return 200; // Business
-       if (row === 10 || row === 11) return 50; // Extra Legroom
-       return 0; // Standard Economy
-   };
-
-   const handleSeatClick = (seat: string) => {
-      if (occupiedSeats.includes(seat)) return;
-      setSelectedSeat(seat);
-      setCurrentSeatPrice(getSeatPrice(seat));
-   };
-
-   return (
-      <div className="min-h-screen pt-32 pb-12 px-6 md:px-12 max-w-[1920px] mx-auto animate-in fade-in slide-in-from-right-8">
-         <button onClick={onBack} className="flex items-center gap-2 text-silver-500 hover:text-black dark:hover:text-white mb-8 transition-colors">
-            <ArrowLeft size={20} /> Back to Flight Selection
-         </button>
-
-         <div className="grid lg:grid-cols-3 gap-12">
-            <div className="lg:col-span-2">
-               <h2 className="text-3xl font-display font-bold mb-2">Select your seat</h2>
-               <p className="text-silver-500 mb-6 flex items-center gap-2">
-                  <Plane size={16} /> {flight.aircraft} • {flight.cabinClass}
-               </p>
-
-               {/* Legend */}
-               <div className="flex flex-wrap gap-4 md:gap-6 mb-8 text-xs font-medium text-silver-500">
-                  <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-white dark:bg-zinc-700 border border-silver-200 dark:border-zinc-600"></div> Free</div>
-                  <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-blue-100 dark:bg-blue-900 border border-blue-200"></div> $50+</div>
-                  <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-purple-100 dark:bg-purple-900 border border-purple-200"></div> $200+</div>
-                  <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-black dark:bg-white"></div> Selected</div>
-                  <div className="flex items-center gap-2"><div className="w-4 h-4 rounded bg-silver-100 dark:bg-zinc-800 text-silver-300 flex items-center justify-center font-bold">X</div> Occupied</div>
-               </div>
-
-               <div className="bg-white dark:bg-zinc-900 rounded-[3rem] p-8 md:p-12 border border-silver-200 dark:border-zinc-800 relative overflow-hidden flex flex-col items-center overflow-x-auto">
-                  
-                  {/* Plane Body Decor */}
-                  <div className="absolute inset-y-0 left-0 w-12 bg-silver-50 dark:bg-zinc-950/50 border-r border-silver-100 dark:border-zinc-800 hidden md:block"></div>
-                  <div className="absolute inset-y-0 right-0 w-12 bg-silver-50 dark:bg-zinc-950/50 border-l border-silver-100 dark:border-zinc-800 hidden md:block"></div>
-                  
-                  {/* Cockpit Indicator */}
-                  <div className="w-32 h-16 bg-gradient-to-b from-silver-100 to-transparent dark:from-zinc-800 dark:to-transparent rounded-b-full absolute -top-10"></div>
-
-                  <div className="w-full max-w-md mx-auto relative z-10 pt-8">
-                     
-                     {/* Business Class (2-2) */}
-                     <div className="mb-12">
-                        <div className="text-center mb-6 text-[10px] font-bold uppercase tracking-widest text-silver-400 flex items-center justify-center gap-2">
-                            <span className="h-[1px] w-8 bg-silver-200 dark:bg-zinc-700"></span>
-                            Business Class
-                            <span className="h-[1px] w-8 bg-silver-200 dark:bg-zinc-700"></span>
-                        </div>
-                        <div className="flex flex-col gap-4">
-                           {businessRows.map(row => (
-                               <div key={row} className="flex justify-center gap-6">
-                                   {/* Left Side (A, C) */}
-                                   <div className="flex gap-3">
-                                       {['A', 'C'].map(col => {
-                                           const seatId = `${row}${col}`;
-                                           const isOccupied = occupiedSeats.includes(seatId);
-                                           const isSelected = selectedSeat === seatId;
-                                           return (
-                                               <button 
-                                                   key={seatId}
-                                                   disabled={isOccupied}
-                                                   onClick={() => handleSeatClick(seatId)}
-                                                   className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-all
-                                                      ${isOccupied ? 'bg-silver-100 dark:bg-zinc-800 text-silver-300 cursor-not-allowed' : 
-                                                        isSelected ? 'bg-black dark:bg-white text-white dark:text-black scale-110 shadow-xl' : 
-                                                        'bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 hover:border-black dark:hover:border-white text-purple-700 dark:text-purple-300'}
-                                                   `}
-                                               >
-                                                   {isOccupied ? 'X' : seatId}
-                                               </button>
-                                           );
-                                       })}
-                                   </div>
-                                   {/* Aisle */}
-                                   <div className="w-4"></div>
-                                   {/* Right Side (D, F) */}
-                                   <div className="flex gap-3">
-                                       {['D', 'F'].map(col => {
-                                           const seatId = `${row}${col}`;
-                                           const isOccupied = occupiedSeats.includes(seatId);
-                                           const isSelected = selectedSeat === seatId;
-                                           return (
-                                               <button 
-                                                   key={seatId}
-                                                   disabled={isOccupied}
-                                                   onClick={() => handleSeatClick(seatId)}
-                                                   className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-all
-                                                      ${isOccupied ? 'bg-silver-100 dark:bg-zinc-800 text-silver-300 cursor-not-allowed' : 
-                                                        isSelected ? 'bg-black dark:bg-white text-white dark:text-black scale-110 shadow-xl' : 
-                                                        'bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 hover:border-black dark:hover:border-white text-purple-700 dark:text-purple-300'}
-                                                   `}
-                                               >
-                                                   {isOccupied ? 'X' : seatId}
-                                               </button>
-                                           );
-                                       })}
-                                   </div>
-                               </div>
-                           ))}
-                        </div>
-                     </div>
-
-                     {/* Economy Class (3-3) */}
-                     <div>
-                        <div className="text-center mb-6 text-[10px] font-bold uppercase tracking-widest text-silver-400 flex items-center justify-center gap-2">
-                            <span className="h-[1px] w-8 bg-silver-200 dark:bg-zinc-700"></span>
-                            Economy Class
-                            <span className="h-[1px] w-8 bg-silver-200 dark:bg-zinc-700"></span>
-                        </div>
-                        <div className="flex flex-col gap-3">
-                           {economyRows.map(row => (
-                               <div key={row} className="flex justify-center gap-4">
-                                   {/* Left Side (A, B, C) */}
-                                   <div className="flex gap-2">
-                                       {['A', 'B', 'C'].map(col => {
-                                           const seatId = `${row}${col}`;
-                                           const isOccupied = occupiedSeats.includes(seatId);
-                                           const isSelected = selectedSeat === seatId;
-                                           const isExtraLegroom = row === 10 || row === 11;
-                                           return (
-                                               <button 
-                                                   key={seatId}
-                                                   disabled={isOccupied}
-                                                   onClick={() => handleSeatClick(seatId)}
-                                                   className={`w-9 h-9 rounded-md flex items-center justify-center text-[10px] font-bold transition-all
-                                                      ${isOccupied ? 'bg-silver-100 dark:bg-zinc-800 text-silver-300 cursor-not-allowed' : 
-                                                        isSelected ? 'bg-black dark:bg-white text-white dark:text-black scale-110 shadow-lg' : 
-                                                        isExtraLegroom ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 hover:border-black' :
-                                                        'bg-white dark:bg-zinc-700 border border-silver-200 dark:border-zinc-600 hover:border-black dark:hover:border-white'}
-                                                   `}
-                                               >
-                                                   {isOccupied ? '' : seatId}
-                                               </button>
-                                           );
-                                       })}
-                                   </div>
-                                   {/* Aisle */}
-                                   <div className="w-2"></div>
-                                   {/* Right Side (D, E, F) */}
-                                   <div className="flex gap-2">
-                                       {['D', 'E', 'F'].map(col => {
-                                           const seatId = `${row}${col}`;
-                                           const isOccupied = occupiedSeats.includes(seatId);
-                                           const isSelected = selectedSeat === seatId;
-                                           const isExtraLegroom = row === 10 || row === 11;
-                                           return (
-                                               <button 
-                                                   key={seatId}
-                                                   disabled={isOccupied}
-                                                   onClick={() => handleSeatClick(seatId)}
-                                                   className={`w-9 h-9 rounded-md flex items-center justify-center text-[10px] font-bold transition-all
-                                                      ${isOccupied ? 'bg-silver-100 dark:bg-zinc-800 text-silver-300 cursor-not-allowed' : 
-                                                        isSelected ? 'bg-black dark:bg-white text-white dark:text-black scale-110 shadow-lg' : 
-                                                        isExtraLegroom ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 hover:border-black' :
-                                                        'bg-white dark:bg-zinc-700 border border-silver-200 dark:border-zinc-600 hover:border-black dark:hover:border-white'}
-                                                   `}
-                                               >
-                                                   {isOccupied ? '' : seatId}
-                                               </button>
-                                           );
-                                       })}
-                                   </div>
-                               </div>
-                           ))}
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-
-            {/* Selection Summary */}
-            <div className="lg:col-span-1">
-               <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-silver-200 dark:border-zinc-800 sticky top-32 shadow-xl">
-                  <h3 className="font-bold text-xl mb-6">Your Selection</h3>
-                  <div className="space-y-4 mb-8">
-                     <div className="flex justify-between items-center py-4 border-b border-silver-100 dark:border-zinc-800">
-                        <span className="text-silver-500">Flight</span>
-                        <span className="font-bold">{flight.flightNumber}</span>
-                     </div>
-                     <div className="flex justify-between items-center py-4 border-b border-silver-100 dark:border-zinc-800">
-                        <span className="text-silver-500">Route</span>
-                        <span className="font-bold text-right text-sm">{flight.origin} → {flight.destination}</span>
-                     </div>
-                     <div className="flex justify-between items-center py-4 border-b border-silver-100 dark:border-zinc-800">
-                        <span className="text-silver-500">Class</span>
-                        <span className="font-bold text-right text-sm">{flight.cabinClass}</span>
-                     </div>
-                     <div className="flex justify-between items-center py-4 border-b border-silver-100 dark:border-zinc-800">
-                        <span className="text-silver-500">Seat</span>
-                        <span className="font-bold text-xl">{selectedSeat || '-'}</span>
-                     </div>
-                     <div className="flex justify-between items-center py-4 border-b border-silver-100 dark:border-zinc-800 text-green-600">
-                        <span className="font-medium">Seat Price</span>
-                        <span className="font-bold text-lg">${currentSeatPrice}</span>
-                     </div>
-                  </div>
-                  
-                  <button 
-                     disabled={!selectedSeat}
-                     onClick={() => selectedSeat && onSelect(selectedSeat, currentSeatPrice)}
-                     className="w-full py-4 bg-black dark:bg-white text-white dark:text-black rounded-xl font-bold text-lg shadow-xl hover:scale-[1.02] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                     Confirm Seat
-                  </button>
-               </div>
-            </div>
-         </div>
-      </div>
-   );
 };
 
 export default FlightResults;

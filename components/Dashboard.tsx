@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { User, Flight } from '../types';
-import { Plane, Calendar, MapPin, ChevronDown, ChevronUp, Award, Bell, X, Terminal, Wifi, Utensils, Tv, Luggage, Hash, Settings, ArrowRight } from 'lucide-react';
+import { Plane, Calendar, MapPin, ChevronDown, ChevronUp, Award, Bell, X, Terminal, Wifi, Utensils, Tv, Luggage, Hash, Settings, ArrowRight, Check } from 'lucide-react';
 
 interface DashboardProps {
   user: User;
@@ -125,9 +125,13 @@ const FlightCard: React.FC<{ flight: Flight }> = ({ flight }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isAlertsOpen, setIsAlertsOpen] = useState(false);
   const [alerts, setAlerts] = useState(flight.alerts || { priceChange: false, statusUpdate: false });
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saved'>('idle');
 
   const toggleAlert = (key: keyof typeof alerts) => {
     setAlerts(prev => ({ ...prev, [key]: !prev[key] }));
+    // Show visual confirmation
+    setSaveStatus('saved');
+    setTimeout(() => setSaveStatus('idle'), 2000);
   };
 
   const hasWifi = true; // Default for mock
@@ -213,6 +217,13 @@ const FlightCard: React.FC<{ flight: Flight }> = ({ flight }) => {
                             </div>
                          </label>
                       </div>
+                      
+                      {/* Visual Save Confirmation */}
+                      {saveStatus === 'saved' && (
+                         <div className="mt-3 py-1.5 px-3 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg text-xs font-bold flex items-center justify-center gap-1 animate-in fade-in zoom-in">
+                            <Check size={12} /> Preferences Saved
+                         </div>
+                      )}
                    </div>
                 )}
              </div>

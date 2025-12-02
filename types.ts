@@ -52,7 +52,7 @@ export interface User {
   avatarUrl?: string;
 }
 
-export type ViewState = 'HOME' | 'FLIGHT_RESULTS' | 'DASHBOARD' | 'ADMIN' | 'ABOUT' | 'HELP' | 'REWARDS' | 'REWARDS_CENTER' | 'SETTINGS' | 'INSURANCE' | 'INSURANCE_FULL_POLICY' | 'ONBOARD' | 'CHECKIN' | 'BAGGAGE' | 'FLEET';
+export type ViewState = 'HOME' | 'FLIGHT_RESULTS' | 'DASHBOARD' | 'ADMIN' | 'ABOUT' | 'HELP' | 'REWARDS' | 'REWARDS_CENTER' | 'REWARDS_EARNING' | 'REWARDS_REDEMPTION' | 'REWARDS_TIERS' | 'SETTINGS' | 'INSURANCE' | 'INSURANCE_FULL_POLICY' | 'ONBOARD' | 'CHECKIN' | 'BAGGAGE' | 'FLEET' | 'FIRST_CLASS' | 'BUSINESS_CLASS' | 'PREMIUM_ECONOMY' | 'ECONOMY' | 'PROHIBITED_ITEMS' | 'ENTERTAINMENT' | 'CONNECTIVITY' | 'SPECIAL_SERVICES' | 'SUSTAINABILITY' | 'PRIVACY_POLICY' | 'TERMS_OF_SERVICE';
 
 export interface BookingFormData {
   from: string;
@@ -69,4 +69,5 @@ export interface SearchCriteria {
   includeInsurance?: boolean;
   flightType: 'one-way' | 'return';
   travelClass: 'Economy' | 'Premium Economy' | 'Business' | 'First Class';
+  flightNumber?: string;
 }

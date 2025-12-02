@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { User, ViewState } from '../types';
-import { Menu, X, Moon, Sun, LogOut, Search, ChevronDown, ChevronRight, Plane, Luggage, CheckCircle, User as UserIcon } from 'lucide-react';
+import { Menu, X, Moon, Sun, LogOut, Search, ChevronDown, ChevronRight, Plane, Luggage, CheckCircle, User as UserIcon, Star, Armchair, Coffee, Crown, Tv, Wifi, HeartHandshake, Award, Coins, Ticket } from 'lucide-react';
 import Logo from './Logo';
 
 interface NavbarProps {
@@ -26,8 +26,11 @@ const Navbar: React.FC<NavbarProps> = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [travelDropdownOpen, setTravelDropdownOpen] = useState(false);
+  const [rewardsDropdownOpen, setRewardsDropdownOpen] = useState(false); // New state for Rewards
+  const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const travelDropdownRef = useRef<HTMLDivElement>(null);
+  const rewardsDropdownRef = useRef<HTMLDivElement>(null); // New ref
 
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
@@ -37,8 +40,11 @@ const Navbar: React.FC<NavbarProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (travelDropdownRef.current && !travelDropdownRef.current.contains(event.target as Node)) {
         setTravelDropdownOpen(false);
+      }
+      if (rewardsDropdownRef.current && !rewardsDropdownRef.current.contains(event.target as Node)) {
+        setRewardsDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -48,7 +54,39 @@ const Navbar: React.FC<NavbarProps> = ({
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSearchOpen(false);
-    // In a real app, this would trigger a global search
+    
+    const query = searchQuery.toLowerCase();
+
+    // Basic routing logic based on keywords
+    if (query.includes('help') || query.includes('support') || query.includes('contact')) {
+        onNavigate('HELP');
+    } else if (query.includes('bag') || query.includes('luggage')) {
+        onNavigate('BAGGAGE');
+    } else if (query.includes('check') || query.includes('boarding')) {
+        onNavigate('CHECKIN');
+    } else if (query.includes('fleet') || query.includes('plane') || query.includes('aircraft')) {
+        onNavigate('FLEET');
+    } else if (query.includes('first class')) {
+        onNavigate('FIRST_CLASS');
+    } else if (query.includes('business')) {
+        onNavigate('BUSINESS_CLASS');
+    } else if (query.includes('movie') || query.includes('tv') || query.includes('game') || query.includes('entertainment')) {
+        onNavigate('ENTERTAINMENT');
+    } else if (query.includes('wifi') || query.includes('internet') || query.includes('connect')) {
+        onNavigate('CONNECTIVITY');
+    } else if (query.includes('food') || query.includes('eat')) {
+        onNavigate('ONBOARD');
+    } else if (query.includes('reward') || query.includes('points') || query.includes('mile')) {
+        onNavigate('REWARDS');
+    } else if (query.includes('insurance') || query.includes('policy')) {
+        onNavigate('INSURANCE');
+    } else if (query.includes('special') || query.includes('assistance') || query.includes('wheelchair') || query.includes('pet')) {
+        onNavigate('SPECIAL_SERVICES');
+    } else {
+        // Default to Home/Booking for destination searches
+        onNavigate('HOME');
+    }
+    setSearchQuery('');
   };
 
   return (
@@ -73,64 +111,121 @@ const Navbar: React.FC<NavbarProps> = ({
           </button>
           
           {/* Travel Info Dropdown */}
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative" ref={travelDropdownRef}>
             <button 
               onClick={() => setTravelDropdownOpen(!travelDropdownOpen)}
-              className={`flex items-center gap-1 text-sm font-medium transition-colors ${['ONBOARD', 'CHECKIN', 'BAGGAGE', 'FLEET'].includes(currentView) ? 'text-black dark:text-white font-bold' : 'text-silver-500 hover:text-black dark:hover:text-white'}`}
+              className={`flex items-center gap-1 text-sm font-medium transition-colors ${['ONBOARD', 'CHECKIN', 'BAGGAGE', 'FLEET', 'FIRST_CLASS', 'BUSINESS_CLASS', 'PREMIUM_ECONOMY', 'ECONOMY', 'ENTERTAINMENT', 'CONNECTIVITY', 'SPECIAL_SERVICES'].includes(currentView) ? 'text-black dark:text-white font-bold' : 'text-silver-500 hover:text-black dark:hover:text-white'}`}
             >
               Travel Info <ChevronDown size={14} className={`transition-transform duration-200 ${travelDropdownOpen ? 'rotate-180' : ''}`}/>
             </button>
             
             {travelDropdownOpen && (
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-64 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-silver-200 dark:border-zinc-800 p-2 animate-in fade-in slide-in-from-top-2 overflow-hidden">
-                <div className="flex flex-col gap-1">
-                  <button onClick={() => { onNavigate('ONBOARD'); setTravelDropdownOpen(false); }} className="flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group">
-                    <div className="bg-silver-100 dark:bg-zinc-800 p-2 rounded-lg group-hover:bg-white dark:group-hover:bg-zinc-700 transition-colors">
-                      <Plane size={16} />
-                    </div>
-                    <div>
-                      <div className="text-sm font-bold text-black dark:text-white">Onboard</div>
-                      <div className="text-[10px] text-silver-500">Dining & Comfort</div>
-                    </div>
-                  </button>
-                  <button onClick={() => { onNavigate('CHECKIN'); setTravelDropdownOpen(false); }} className="flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group">
-                    <div className="bg-silver-100 dark:bg-zinc-800 p-2 rounded-lg group-hover:bg-white dark:group-hover:bg-zinc-700 transition-colors">
-                      <CheckCircle size={16} />
-                    </div>
-                    <div>
-                      <div className="text-sm font-bold text-black dark:text-white">Check-in</div>
-                      <div className="text-[10px] text-silver-500">Airport Guide</div>
-                    </div>
-                  </button>
-                  <button onClick={() => { onNavigate('BAGGAGE'); setTravelDropdownOpen(false); }} className="flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group">
-                    <div className="bg-silver-100 dark:bg-zinc-800 p-2 rounded-lg group-hover:bg-white dark:group-hover:bg-zinc-700 transition-colors">
-                      <Luggage size={16} />
-                    </div>
-                    <div>
-                      <div className="text-sm font-bold text-black dark:text-white">Baggage</div>
-                      <div className="text-[10px] text-silver-500">Allowances & Fees</div>
-                    </div>
-                  </button>
-                   <button onClick={() => { onNavigate('FLEET'); setTravelDropdownOpen(false); }} className="flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group">
-                    <div className="bg-silver-100 dark:bg-zinc-800 p-2 rounded-lg group-hover:bg-white dark:group-hover:bg-zinc-700 transition-colors">
-                      <Plane size={16} />
-                    </div>
-                    <div>
-                      <div className="text-sm font-bold text-black dark:text-white">Our Fleet</div>
-                      <div className="text-[10px] text-silver-500">Meet our Aircraft</div>
-                    </div>
-                  </button>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-6 w-[600px] bg-white dark:bg-zinc-900 rounded-[2rem] shadow-xl border border-silver-200 dark:border-zinc-800 p-6 animate-in fade-in slide-in-from-top-2 overflow-hidden z-50">
+                <div className="grid grid-cols-2 gap-8">
+                  {/* Column 1: Classes & Onboard Services */}
+                  <div className="space-y-4">
+                     <h3 className="text-xs font-bold uppercase tracking-wider text-silver-400 pl-3">Cabins & Service</h3>
+                     <div className="space-y-1">
+                        <button onClick={() => { onNavigate('FIRST_CLASS'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                            <div className="w-8 h-8 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center shrink-0">
+                            <Crown size={14} />
+                            </div>
+                            <div className="text-sm font-bold text-black dark:text-white">First Class</div>
+                        </button>
+                        <button onClick={() => { onNavigate('BUSINESS_CLASS'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                            <div className="w-8 h-8 rounded-full bg-silver-100 dark:bg-zinc-800 text-black dark:text-white flex items-center justify-center shrink-0">
+                            <Star size={14} />
+                            </div>
+                            <div className="text-sm font-bold text-black dark:text-white">Business</div>
+                        </button>
+                        <button onClick={() => { onNavigate('PREMIUM_ECONOMY'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                            <div className="w-8 h-8 rounded-full bg-silver-100 dark:bg-zinc-800 text-black dark:text-white flex items-center justify-center shrink-0">
+                            <Coffee size={14} />
+                            </div>
+                            <div className="text-sm font-bold text-black dark:text-white">Premium Econ</div>
+                        </button>
+                        <button onClick={() => { onNavigate('ECONOMY'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                            <div className="w-8 h-8 rounded-full bg-silver-100 dark:bg-zinc-800 text-black dark:text-white flex items-center justify-center shrink-0">
+                            <Armchair size={14} />
+                            </div>
+                            <div className="text-sm font-bold text-black dark:text-white">Economy</div>
+                        </button>
+                     </div>
+                  </div>
+
+                  {/* Column 2: Guide & Features */}
+                  <div className="space-y-4">
+                     <h3 className="text-xs font-bold uppercase tracking-wider text-silver-400 pl-3">Guide & Features</h3>
+                     <div className="space-y-1">
+                        <button onClick={() => { onNavigate('ENTERTAINMENT'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                            <Tv size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
+                            <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Entertainment</span>
+                        </button>
+                        <button onClick={() => { onNavigate('CONNECTIVITY'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                            <Wifi size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
+                            <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Wi-Fi & Connectivity</span>
+                        </button>
+                        <button onClick={() => { onNavigate('SPECIAL_SERVICES'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                            <HeartHandshake size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
+                            <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Special Services</span>
+                        </button>
+                        <button onClick={() => { onNavigate('CHECKIN'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                            <CheckCircle size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
+                            <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Check-in Guide</span>
+                        </button>
+                        <button onClick={() => { onNavigate('BAGGAGE'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                            <Luggage size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
+                            <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Baggage Info</span>
+                        </button>
+                        <button onClick={() => { onNavigate('FLEET'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                            <Plane size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
+                            <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Our Fleet</span>
+                        </button>
+                     </div>
+                     <div className="pt-2">
+                        <button onClick={() => { onNavigate('ONBOARD'); setTravelDropdownOpen(false); }} className="w-full py-2 bg-silver-100 dark:bg-zinc-800 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black rounded-lg text-xs font-bold uppercase tracking-wider transition-colors">
+                            View All Onboard
+                        </button>
+                     </div>
+                  </div>
                 </div>
               </div>
             )}
           </div>
 
-          <button 
-             onClick={() => onNavigate('REWARDS')}
-             className={`text-sm font-medium transition-colors ${currentView === 'REWARDS' ? 'text-black dark:text-white font-bold' : 'text-silver-500 hover:text-black dark:hover:text-white'}`}
-          >
-            Rewards
-          </button>
+          {/* Rewards Dropdown - NEW */}
+          <div className="relative" ref={rewardsDropdownRef}>
+            <button 
+              onClick={() => setRewardsDropdownOpen(!rewardsDropdownOpen)}
+              className={`flex items-center gap-1 text-sm font-medium transition-colors ${['REWARDS', 'REWARDS_EARNING', 'REWARDS_REDEMPTION', 'REWARDS_TIERS'].includes(currentView) ? 'text-black dark:text-white font-bold' : 'text-silver-500 hover:text-black dark:hover:text-white'}`}
+            >
+              Rewards <ChevronDown size={14} className={`transition-transform duration-200 ${rewardsDropdownOpen ? 'rotate-180' : ''}`}/>
+            </button>
+            
+            {rewardsDropdownOpen && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-6 w-[280px] bg-white dark:bg-zinc-900 rounded-[2rem] shadow-xl border border-silver-200 dark:border-zinc-800 p-4 animate-in fade-in slide-in-from-top-2 overflow-hidden z-50">
+                 <div className="space-y-1">
+                    <button onClick={() => { onNavigate('REWARDS'); setRewardsDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                        <Award size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
+                        <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Program Overview</span>
+                    </button>
+                    <button onClick={() => { onNavigate('REWARDS_EARNING'); setRewardsDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                        <Coins size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
+                        <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Earning Points</span>
+                    </button>
+                    <button onClick={() => { onNavigate('REWARDS_REDEMPTION'); setRewardsDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                        <Ticket size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
+                        <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Redeeming Points</span>
+                    </button>
+                    <button onClick={() => { onNavigate('REWARDS_TIERS'); setRewardsDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                        <Crown size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
+                        <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Elite Status</span>
+                    </button>
+                 </div>
+              </div>
+            )}
+          </div>
+
           <button 
              onClick={() => onNavigate('INSURANCE')}
              className={`text-sm font-medium transition-colors ${currentView === 'INSURANCE' ? 'text-black dark:text-white font-bold' : 'text-silver-500 hover:text-black dark:hover:text-white'}`}
@@ -169,8 +264,10 @@ const Navbar: React.FC<NavbarProps> = ({
             <input 
               ref={searchInputRef}
               type="text" 
-              placeholder="Search destinations, flights, or help topics..." 
+              placeholder="Search destinations, baggage info, or help topics..." 
               className="w-full bg-silver-50 dark:bg-zinc-800 border border-silver-200 dark:border-zinc-700 rounded-full py-2 pl-10 pr-4 outline-none focus:ring-2 ring-black dark:ring-white text-sm"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
             <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-silver-400" />
             <button 
@@ -250,23 +347,44 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="absolute top-full mt-2 left-0 right-0 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-silver-200 dark:border-zinc-800 rounded-2xl shadow-xl p-4 flex flex-col gap-2 lg:hidden animate-in fade-in slide-in-from-top-4 duration-200 z-50">
           
           {/* Mobile Search */}
-          <div className="relative mb-2">
-             <input type="text" placeholder="Search..." className="w-full bg-silver-50 dark:bg-zinc-800 p-3 rounded-xl text-sm outline-none border border-transparent focus:border-black dark:focus:border-white" />
+          <form onSubmit={handleSearchSubmit} className="relative mb-2">
+             <input 
+                type="text" 
+                placeholder="Search..." 
+                className="w-full bg-silver-50 dark:bg-zinc-800 p-3 rounded-xl text-sm outline-none border border-transparent focus:border-black dark:focus:border-white" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+             />
              <Search size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-silver-400"/>
-          </div>
+          </form>
 
           <button onClick={() => { onNavigate('HOME'); setIsMobileMenuOpen(false); }} className="p-3 text-left rounded-lg hover:bg-silver-50 dark:hover:bg-zinc-800 font-medium">Book Flight</button>
           
           {/* Mobile Travel Info Accordion */}
           <div className="bg-silver-50 dark:bg-zinc-950/50 rounded-xl overflow-hidden">
-             <div className="p-3 text-xs font-bold uppercase tracking-wider text-silver-400">Travel Information</div>
-             <button onClick={() => { onNavigate('ONBOARD'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Plane size={14}/> Onboard Experience</button>
+             <div className="p-3 text-xs font-bold uppercase tracking-wider text-silver-400">Onboard Experience</div>
+             <button onClick={() => { onNavigate('FIRST_CLASS'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Crown size={14}/> First Class</button>
+             <button onClick={() => { onNavigate('BUSINESS_CLASS'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Star size={14}/> Business Class</button>
+             <button onClick={() => { onNavigate('PREMIUM_ECONOMY'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Coffee size={14}/> Premium Economy</button>
+             <button onClick={() => { onNavigate('ECONOMY'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Armchair size={14}/> Economy</button>
+             <button onClick={() => { onNavigate('ENTERTAINMENT'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Tv size={14}/> Entertainment</button>
+             <button onClick={() => { onNavigate('CONNECTIVITY'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Wifi size={14}/> Internet & Wi-Fi</button>
+             
+             <div className="p-3 mt-2 text-xs font-bold uppercase tracking-wider text-silver-400 border-t border-silver-100 dark:border-zinc-800">Travel Guide</div>
+             <button onClick={() => { onNavigate('SPECIAL_SERVICES'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><HeartHandshake size={14}/> Special Services</button>
              <button onClick={() => { onNavigate('CHECKIN'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><CheckCircle size={14}/> Check-in Guide</button>
              <button onClick={() => { onNavigate('BAGGAGE'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Luggage size={14}/> Baggage Info</button>
              <button onClick={() => { onNavigate('FLEET'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Plane size={14}/> Our Fleet</button>
           </div>
 
-          <button onClick={() => { onNavigate('REWARDS'); setIsMobileMenuOpen(false); }} className="p-3 text-left rounded-lg hover:bg-silver-50 dark:hover:bg-zinc-800 font-medium text-silver-500">Rewards</button>
+          <div className="bg-silver-50 dark:bg-zinc-950/50 rounded-xl overflow-hidden mt-2">
+             <div className="p-3 text-xs font-bold uppercase tracking-wider text-silver-400">Flopcoast Rewards</div>
+             <button onClick={() => { onNavigate('REWARDS'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Award size={14}/> Overview</button>
+             <button onClick={() => { onNavigate('REWARDS_EARNING'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Coins size={14}/> Ways to Earn</button>
+             <button onClick={() => { onNavigate('REWARDS_REDEMPTION'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Ticket size={14}/> Ways to Spend</button>
+             <button onClick={() => { onNavigate('REWARDS_TIERS'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Crown size={14}/> Elite Status</button>
+          </div>
+
           <button onClick={() => { onNavigate('INSURANCE'); setIsMobileMenuOpen(false); }} className="p-3 text-left rounded-lg hover:bg-silver-50 dark:hover:bg-zinc-800 font-medium text-silver-500">Insurance</button>
           <button onClick={() => { onNavigate('ABOUT'); setIsMobileMenuOpen(false); }} className="p-3 text-left rounded-lg hover:bg-silver-50 dark:hover:bg-zinc-800 font-medium text-silver-500">About Us</button>
           <button onClick={() => { onNavigate('HELP'); setIsMobileMenuOpen(false); }} className="p-3 text-left rounded-lg hover:bg-silver-50 dark:hover:bg-zinc-800 font-medium text-silver-500">Help Center</button>

@@ -46,8 +46,8 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <h4 className="font-display font-semibold text-lg mb-6">Company</h4>
             <ul className="space-y-4">
               <FooterLink href="#" onClick={() => onNavigate?.('ABOUT')}>About Us</FooterLink>
-              <FooterLink href="#">Careers</FooterLink>
-              <FooterLink href="#">Investor Relations</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('CAREERS')}>Careers</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('INVESTOR_RELATIONS')}>Investor Relations</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('SUSTAINABILITY')}>Sustainability</FooterLink>
             </ul>
           </div>

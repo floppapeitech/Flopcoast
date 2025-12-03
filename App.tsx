@@ -33,6 +33,8 @@ import SpecialServices from './components/SpecialServices';
 import Sustainability from './components/Sustainability';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
+import Careers from './components/Careers';
+import InvestorRelations from './components/InvestorRelations';
 import { User, ViewState, SearchCriteria } from './types';
 import { INITIAL_USERS } from './services/mockData';
 
@@ -243,6 +245,10 @@ const App: React.FC = () => {
         return <PrivacyPolicy />;
       case 'TERMS_OF_SERVICE':
         return <TermsOfService />;
+      case 'CAREERS':
+        return <Careers />;
+      case 'INVESTOR_RELATIONS':
+        return <InvestorRelations />;
       default:
         return <Hero onSearch={handleSearch} />;
     }

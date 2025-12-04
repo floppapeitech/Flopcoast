@@ -82,6 +82,10 @@ const Navbar: React.FC<NavbarProps> = ({
         onNavigate('INSURANCE');
     } else if (query.includes('special') || query.includes('assistance') || query.includes('wheelchair') || query.includes('pet')) {
         onNavigate('SPECIAL_SERVICES');
+    } else if (query.includes('lounge') || query.includes('relax')) {
+        onNavigate('LOUNGES');
+    } else if (query.includes('cargo') || query.includes('freight')) {
+        onNavigate('CARGO');
     } else {
         // Default to Home/Booking for destination searches
         onNavigate('HOME');
@@ -114,7 +118,7 @@ const Navbar: React.FC<NavbarProps> = ({
           <div className="relative" ref={travelDropdownRef}>
             <button 
               onClick={() => setTravelDropdownOpen(!travelDropdownOpen)}
-              className={`flex items-center gap-1 text-sm font-medium transition-colors ${['ONBOARD', 'CHECKIN', 'BAGGAGE', 'FLEET', 'FIRST_CLASS', 'BUSINESS_CLASS', 'PREMIUM_ECONOMY', 'ECONOMY', 'ENTERTAINMENT', 'CONNECTIVITY', 'SPECIAL_SERVICES'].includes(currentView) ? 'text-black dark:text-white font-bold' : 'text-silver-500 hover:text-black dark:hover:text-white'}`}
+              className={`flex items-center gap-1 text-sm font-medium transition-colors ${['ONBOARD', 'CHECKIN', 'BAGGAGE', 'FLEET', 'FIRST_CLASS', 'BUSINESS_CLASS', 'PREMIUM_ECONOMY', 'ECONOMY', 'ENTERTAINMENT', 'CONNECTIVITY', 'SPECIAL_SERVICES', 'LOUNGES'].includes(currentView) ? 'text-black dark:text-white font-bold' : 'text-silver-500 hover:text-black dark:hover:text-white'}`}
             >
               Travel Info <ChevronDown size={14} className={`transition-transform duration-200 ${travelDropdownOpen ? 'rotate-180' : ''}`}/>
             </button>
@@ -165,6 +169,10 @@ const Navbar: React.FC<NavbarProps> = ({
                             <Wifi size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
                             <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Wi-Fi & Connectivity</span>
                         </button>
+                        <button onClick={() => { onNavigate('LOUNGES'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                            <Coffee size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
+                            <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Lounges</span>
+                        </button>
                         <button onClick={() => { onNavigate('SPECIAL_SERVICES'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
                             <HeartHandshake size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
                             <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Special Services</span>
@@ -176,10 +184,6 @@ const Navbar: React.FC<NavbarProps> = ({
                         <button onClick={() => { onNavigate('BAGGAGE'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
                             <Luggage size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
                             <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Baggage Info</span>
-                        </button>
-                        <button onClick={() => { onNavigate('FLEET'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
-                            <Plane size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
-                            <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Our Fleet</span>
                         </button>
                      </div>
                      <div className="pt-2">
@@ -193,7 +197,7 @@ const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          {/* Rewards Dropdown - NEW */}
+          {/* Rewards Dropdown */}
           <div className="relative" ref={rewardsDropdownRef}>
             <button 
               onClick={() => setRewardsDropdownOpen(!rewardsDropdownOpen)}
@@ -371,6 +375,7 @@ const Navbar: React.FC<NavbarProps> = ({
              <button onClick={() => { onNavigate('CONNECTIVITY'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Wifi size={14}/> Internet & Wi-Fi</button>
              
              <div className="p-3 mt-2 text-xs font-bold uppercase tracking-wider text-silver-400 border-t border-silver-100 dark:border-zinc-800">Travel Guide</div>
+             <button onClick={() => { onNavigate('LOUNGES'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Coffee size={14}/> Lounges</button>
              <button onClick={() => { onNavigate('SPECIAL_SERVICES'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><HeartHandshake size={14}/> Special Services</button>
              <button onClick={() => { onNavigate('CHECKIN'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><CheckCircle size={14}/> Check-in Guide</button>
              <button onClick={() => { onNavigate('BAGGAGE'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Luggage size={14}/> Baggage Info</button>

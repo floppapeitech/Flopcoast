@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import HomeContent from './components/HomeContent';
 import Dashboard from './components/Dashboard';
 import AdminPanel from './components/AdminPanel';
 import Footer from './components/Footer';
@@ -9,6 +10,7 @@ import AuthModal from './components/AuthModal';
 import About from './components/About';
 import InteractiveMap from './components/InteractiveMap';
 import FlightResults from './components/FlightResults';
+import FlightDeals from './components/FlightDeals';
 import HelpCenter from './components/HelpCenter';
 import Rewards from './components/Rewards';
 import RewardsCenter from './components/RewardsCenter';
@@ -35,6 +37,23 @@ import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
 import Careers from './components/Careers';
 import InvestorRelations from './components/InvestorRelations';
+import Accessibility from './components/Accessibility';
+import Lounges from './components/Lounges';
+import PressRoom from './components/PressRoom';
+import Cargo from './components/Cargo';
+import GeneralCargo from './components/GeneralCargo';
+import FlopFresh from './components/FlopFresh';
+import FlopLive from './components/FlopLive';
+import CookiePolicy from './components/CookiePolicy';
+import TravelAlerts from './components/TravelAlerts';
+import OptionalFees from './components/OptionalFees';
+import Sitemap from './components/Sitemap';
+import PartnerAirlines from './components/PartnerAirlines';
+import GroupTravel from './components/GroupTravel';
+import MobileApp from './components/MobileApp';
+import ContactUs from './components/ContactUs';
+import Destinations from './components/Destinations';
+import Sponsorships from './components/Sponsorships';
 import { User, ViewState, SearchCriteria } from './types';
 import { INITIAL_USERS } from './services/mockData';
 
@@ -156,6 +175,10 @@ const App: React.FC = () => {
         return (
           <>
             <Hero onSearch={handleSearch} />
+            <HomeContent onNavigate={(view) => {
+                setCurrentView(view);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }} />
             <InteractiveMap />
           </>
         );
@@ -167,6 +190,8 @@ const App: React.FC = () => {
             user={currentUser}
           />
         );
+      case 'FLIGHT_DEALS':
+        return <FlightDeals onNavigate={(view) => setCurrentView(view)} />;
       case 'DASHBOARD':
         return currentUser ? <Dashboard user={currentUser} onNavigate={setCurrentView} /> : <Hero onSearch={handleSearch} />; 
       case 'ADMIN':
@@ -249,6 +274,40 @@ const App: React.FC = () => {
         return <Careers />;
       case 'INVESTOR_RELATIONS':
         return <InvestorRelations />;
+      case 'ACCESSIBILITY':
+        return <Accessibility />;
+      case 'LOUNGES':
+        return <Lounges onNavigate={(view) => setCurrentView(view)} />;
+      case 'PRESS':
+        return <PressRoom onNavigate={(view) => setCurrentView(view)} />;
+      case 'CARGO':
+        return <Cargo onNavigate={(view) => setCurrentView(view)} />;
+      case 'CARGO_GENERAL':
+        return <GeneralCargo onNavigate={(view) => setCurrentView(view)} />;
+      case 'CARGO_FRESH':
+        return <FlopFresh onNavigate={(view) => setCurrentView(view)} />;
+      case 'CARGO_LIVE':
+        return <FlopLive onNavigate={(view) => setCurrentView(view)} />;
+      case 'COOKIE_POLICY':
+        return <CookiePolicy />;
+      case 'TRAVEL_ALERTS':
+        return <TravelAlerts onNavigate={(view) => setCurrentView(view)} />;
+      case 'FEES':
+        return <OptionalFees />;
+      case 'SITEMAP':
+        return <Sitemap onNavigate={(view) => setCurrentView(view)} />;
+      case 'PARTNERS':
+        return <PartnerAirlines onNavigate={(view) => setCurrentView(view)} />;
+      case 'GROUP_TRAVEL':
+        return <GroupTravel onNavigate={(view) => setCurrentView(view)} />;
+      case 'MOBILE_APP':
+        return <MobileApp onNavigate={(view) => setCurrentView(view)} />;
+      case 'CONTACT':
+        return <ContactUs onNavigate={(view) => setCurrentView(view)} />;
+      case 'DESTINATIONS':
+        return <Destinations onNavigate={(view) => setCurrentView(view)} />;
+      case 'SPONSORSHIPS':
+        return <Sponsorships onNavigate={(view) => setCurrentView(view)} />;
       default:
         return <Hero onSearch={handleSearch} />;
     }

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Luggage, Backpack, AlertCircle, Scale, Ruler } from 'lucide-react';
+import { Luggage, Backpack, AlertCircle, Scale, Ruler, Music, Trophy, Search, Phone } from 'lucide-react';
 import { ViewState } from '../types';
 
 interface BaggageInfoProps {
@@ -95,8 +95,69 @@ const BaggageInfo: React.FC<BaggageInfoProps> = ({ onNavigate }) => {
          </div>
       </div>
 
+      {/* Special Items */}
+      <div className="grid lg:grid-cols-2 gap-8 mb-8">
+          
+          {/* Sports Equipment */}
+          <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 border border-silver-200 dark:border-zinc-800 shadow-sm">
+              <div className="flex items-center gap-4 mb-6">
+                  <Trophy size={28} className="text-black dark:text-white" />
+                  <h3 className="text-2xl font-bold font-display">Sports Equipment</h3>
+              </div>
+              <p className="text-sm text-silver-500 mb-6">
+                  Most sports equipment counts as one checked bag if within size limits. Oversize fees apply for larger items.
+              </p>
+              <div className="space-y-4">
+                  <div className="flex justify-between p-4 bg-silver-50 dark:bg-zinc-950 rounded-xl border border-silver-100 dark:border-zinc-800">
+                      <span className="font-bold text-sm">Golf Bag</span>
+                      <span className="text-sm text-silver-500">Standard Bag Fee</span>
+                  </div>
+                  <div className="flex justify-between p-4 bg-silver-50 dark:bg-zinc-950 rounded-xl border border-silver-100 dark:border-zinc-800">
+                      <span className="font-bold text-sm">Ski/Snowboard</span>
+                      <span className="text-sm text-silver-500">Standard Bag Fee</span>
+                  </div>
+                  <div className="flex justify-between p-4 bg-silver-50 dark:bg-zinc-950 rounded-xl border border-silver-100 dark:border-zinc-800">
+                      <span className="font-bold text-sm">Bicycle</span>
+                      <span className="text-sm text-silver-500">$75 Handling Fee</span>
+                  </div>
+                  <div className="flex justify-between p-4 bg-silver-50 dark:bg-zinc-950 rounded-xl border border-silver-100 dark:border-zinc-800">
+                      <span className="font-bold text-sm">Surfboard (>2m)</span>
+                      <span className="text-sm text-silver-500">$100 Handling Fee</span>
+                  </div>
+              </div>
+          </div>
+
+          {/* Musical Instruments */}
+          <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 border border-silver-200 dark:border-zinc-800 shadow-sm">
+              <div className="flex items-center gap-4 mb-6">
+                  <Music size={28} className="text-black dark:text-white" />
+                  <h3 className="text-2xl font-bold font-display">Musical Instruments</h3>
+              </div>
+              <div className="space-y-6">
+                  <div>
+                      <h4 className="font-bold text-sm mb-2">Small Instruments</h4>
+                      <p className="text-xs text-silver-500 leading-relaxed">
+                          Violins, flutes, and ukuleles can be brought on board as your carry-on baggage if they fit in the overhead locker.
+                      </p>
+                  </div>
+                  <div>
+                      <h4 className="font-bold text-sm mb-2">Medium Instruments</h4>
+                      <p className="text-xs text-silver-500 leading-relaxed">
+                          Guitars and cellos may require purchasing an extra seat ("CBBG") if you wish to carry them in the cabin. Otherwise, they must be checked in a hard case.
+                      </p>
+                  </div>
+                  <div>
+                      <h4 className="font-bold text-sm mb-2">Large Instruments</h4>
+                      <p className="text-xs text-silver-500 leading-relaxed">
+                          Double basses and drum kits must be checked in as cargo or oversize baggage. Please notify us 48 hours in advance.
+                      </p>
+                  </div>
+              </div>
+          </div>
+      </div>
+
        {/* Restricted Items */}
-       <div className="bg-red-50 dark:bg-red-950/20 rounded-[2.5rem] p-8 md:p-12 border border-red-100 dark:border-red-900/30">
+       <div className="bg-red-50 dark:bg-red-950/20 rounded-[2.5rem] p-8 md:p-12 border border-red-100 dark:border-red-900/30 mb-8">
           <div className="flex items-center gap-4 mb-6">
              <AlertCircle size={32} className="text-red-600 dark:text-red-400" />
              <h2 className="text-2xl font-display font-bold text-red-900 dark:text-red-100">Restricted Items</h2>
@@ -110,6 +171,24 @@ const BaggageInfo: React.FC<BaggageInfoProps> = ({ onNavigate }) => {
           >
               View Full Prohibited List
           </button>
+       </div>
+
+       {/* Lost & Found / Damaged */}
+       <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-12 text-center border border-silver-200 dark:border-zinc-800">
+           <div className="flex flex-col items-center max-w-2xl mx-auto">
+               <h2 className="text-3xl font-display font-bold mb-6">Lost or Damaged Baggage?</h2>
+               <p className="text-silver-500 mb-8">
+                   We're sorry for the inconvenience. Please report any issues immediately at the airport baggage service counter before leaving the terminal.
+               </p>
+               <div className="flex gap-4">
+                   <button className="flex items-center gap-2 px-6 py-3 bg-silver-100 dark:bg-zinc-800 rounded-full font-bold text-sm hover:bg-silver-200 dark:hover:bg-zinc-700 transition-colors">
+                       <Search size={16}/> Track Delayed Bag
+                   </button>
+                   <button className="flex items-center gap-2 px-6 py-3 bg-silver-100 dark:bg-zinc-800 rounded-full font-bold text-sm hover:bg-silver-200 dark:hover:bg-zinc-700 transition-colors">
+                       <Phone size={16}/> File a Claim
+                   </button>
+               </div>
+           </div>
        </div>
 
     </div>

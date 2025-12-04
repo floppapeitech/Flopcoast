@@ -1,13 +1,24 @@
 
-import React from 'react';
-import { TrendingUp, FileText, PieChart, Users, Calendar, Download, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { TrendingUp, FileText, PieChart, Users, Calendar, Download, ArrowUpRight, ArrowDownRight, Briefcase, HelpCircle, Calculator, DollarSign } from 'lucide-react';
 
 const InvestorRelations: React.FC = () => {
+  const [investment, setInvestment] = useState(1000);
+  const [years, setYears] = useState(5);
+  const projectedReturn = Math.round(investment * Math.pow(1.08, years)); // 8% CAGR assumption
+
   const reports = [
       { title: 'Q1 2024 Earnings Report', date: 'April 15, 2024', size: '2.4 MB' },
       { title: '2023 Annual Report', date: 'February 28, 2024', size: '15.1 MB' },
       { title: 'Sustainability Report 2023', date: 'March 10, 2024', size: '8.5 MB' },
       { title: 'Investor Presentation - May', date: 'May 02, 2024', size: '5.2 MB' },
+  ];
+
+  const analysts = [
+      { firm: 'Goldman Sachs', rating: 'Buy', target: 'F$ 160.00' },
+      { firm: 'Morgan Stanley', rating: 'Overweight', target: 'F$ 165.00' },
+      { firm: 'J.P. Morgan', rating: 'Neutral', target: 'F$ 145.00' },
+      { firm: 'Floptropica Capital', rating: 'Strong Buy', target: 'F$ 175.00' },
   ];
 
   return (
@@ -66,7 +77,7 @@ const InvestorRelations: React.FC = () => {
           </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-12">
+      <div className="grid lg:grid-cols-3 gap-12 mb-20">
           
           {/* Financial Reports */}
           <div className="lg:col-span-2 space-y-8">
@@ -142,8 +153,97 @@ const InvestorRelations: React.FC = () => {
                   </div>
               </div>
           </div>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-12">
+          
+          {/* Analyst Coverage */}
+          <div className="bg-white dark:bg-zinc-900 p-10 rounded-[2.5rem] border border-silver-200 dark:border-zinc-800">
+              <h3 className="text-2xl font-display font-bold mb-6 flex items-center gap-3">
+                  <TrendingUp size={28} /> Analyst Coverage
+              </h3>
+              <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                      <thead>
+                          <tr className="border-b border-silver-100 dark:border-zinc-800">
+                              <th className="py-4 text-xs font-bold uppercase text-silver-400">Firm</th>
+                              <th className="py-4 text-xs font-bold uppercase text-silver-400">Rating</th>
+                              <th className="py-4 text-xs font-bold uppercase text-silver-400 text-right">Target</th>
+                          </tr>
+                      </thead>
+                      <tbody className="divide-y divide-silver-100 dark:divide-zinc-800">
+                          {analysts.map((a, i) => (
+                              <tr key={i}>
+                                  <td className="py-4 font-bold">{a.firm}</td>
+                                  <td className="py-4 text-sm">{a.rating}</td>
+                                  <td className="py-4 text-sm font-mono text-right">{a.target}</td>
+                              </tr>
+                          ))}
+                      </tbody>
+                  </table>
+              </div>
+              <p className="text-xs text-silver-400 mt-4">
+                  Consensus rating: Buy. Based on 12 analyst ratings in the last 3 months.
+              </p>
+          </div>
+
+          {/* Investment Calculator */}
+          <div className="bg-silver-50 dark:bg-zinc-950 p-10 rounded-[2.5rem] border border-silver-200 dark:border-zinc-800">
+              <h3 className="text-2xl font-display font-bold mb-6 flex items-center gap-3">
+                  <Calculator size={28} /> Investment Calculator
+              </h3>
+              <div className="space-y-6">
+                  <div>
+                      <label className="text-xs font-bold uppercase text-silver-400 mb-2 block">Initial Investment (F$)</label>
+                      <input 
+                        type="range" min="100" max="10000" step="100" 
+                        value={investment} onChange={(e) => setInvestment(parseInt(e.target.value))}
+                        className="w-full accent-black dark:accent-white mb-2"
+                      />
+                      <div className="font-mono text-xl font-bold">F$ {investment.toLocaleString()}</div>
+                  </div>
+                  <div>
+                      <label className="text-xs font-bold uppercase text-silver-400 mb-2 block">Duration (Years)</label>
+                      <input 
+                        type="range" min="1" max="10" step="1" 
+                        value={years} onChange={(e) => setYears(parseInt(e.target.value))}
+                        className="w-full accent-black dark:accent-white mb-2"
+                      />
+                      <div className="font-mono text-xl font-bold">{years} Years</div>
+                  </div>
+                  <div className="pt-6 border-t border-silver-200 dark:border-zinc-800">
+                      <div className="flex justify-between items-center">
+                          <span className="text-sm font-bold text-silver-500">Projected Value (8% CAGR)</span>
+                          <span className="text-3xl font-bold font-display text-green-600">F$ {projectedReturn.toLocaleString()}</span>
+                      </div>
+                      <p className="text-[10px] text-silver-400 mt-2">
+                          *Hypothetical projection for illustrative purposes only. Past performance is not indicative of future results.
+                      </p>
+                  </div>
+              </div>
+          </div>
 
       </div>
+
+      {/* Shareholder FAQ */}
+      <div className="mt-20 max-w-3xl mx-auto">
+          <h2 className="text-3xl font-display font-bold mb-8 text-center">Shareholder FAQs</h2>
+          <div className="space-y-4">
+              <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-silver-200 dark:border-zinc-800">
+                  <h4 className="font-bold text-lg mb-2 flex items-center gap-2"><HelpCircle size={18}/> When is the next dividend?</h4>
+                  <p className="text-silver-500 leading-relaxed text-sm">Flopcoast aims to pay dividends semi-annually. The next projected payment date is October 15, 2024, subject to Board approval.</p>
+              </div>
+              <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-silver-200 dark:border-zinc-800">
+                  <h4 className="font-bold text-lg mb-2 flex items-center gap-2"><HelpCircle size={18}/> How do I transfer my shares?</h4>
+                  <p className="text-silver-500 leading-relaxed text-sm">Please contact our transfer agent, Equiniti Floptropica, at +1-800-FLOP-EQY or visit their online portal for transfer instructions.</p>
+              </div>
+              <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-silver-200 dark:border-zinc-800">
+                  <h4 className="font-bold text-lg mb-2 flex items-center gap-2"><HelpCircle size={18}/> Where is the stock listed?</h4>
+                  <p className="text-silver-500 leading-relaxed text-sm">Flopcoast Airways is listed on the Floptropica Stock Exchange (FSE) under the ticker symbol <strong>FLOP</strong>.</p>
+              </div>
+          </div>
+      </div>
+
     </div>
   );
 };

@@ -34,10 +34,11 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <div>
             <h4 className="font-display font-semibold text-lg mb-6">Explore</h4>
             <ul className="space-y-4">
-              <FooterLink href="#" onClick={() => onNavigate?.('HOME')}>Destinations</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('DESTINATIONS')}>Destinations</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('REWARDS')}>Rewards Program</FooterLink>
-              <FooterLink href="#" onClick={() => onNavigate?.('ONBOARD')}>Onboard Experience</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('MOBILE_APP')}>Mobile App</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('FLEET')}>Our Fleet</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('CARGO')}>Flopcoast Cargo</FooterLink>
             </ul>
           </div>
 
@@ -46,9 +47,12 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <h4 className="font-display font-semibold text-lg mb-6">Company</h4>
             <ul className="space-y-4">
               <FooterLink href="#" onClick={() => onNavigate?.('ABOUT')}>About Us</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('PARTNERS')}>Our Partners</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('SPONSORSHIPS')}>Sponsorships</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('CAREERS')}>Careers</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('INVESTOR_RELATIONS')}>Investor Relations</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('SUSTAINABILITY')}>Sustainability</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('PRESS')}>Media Center</FooterLink>
             </ul>
           </div>
 
@@ -57,10 +61,12 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <h4 className="font-display font-semibold text-lg mb-6">Support</h4>
             <ul className="space-y-4">
               <FooterLink href="#" onClick={() => onNavigate?.('HELP')}>Help Center</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('CONTACT')}>Contact Us</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('TRAVEL_ALERTS')}>Travel Alerts</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('GROUP_TRAVEL')}>Group Travel</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('INSURANCE')}>Flopcoast Insurance</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('SPECIAL_SERVICES')}>Special Assistance</FooterLink>
-              <FooterLink href="#" onClick={() => onNavigate?.('CHECKIN')}>Check-in Guide</FooterLink>
-              <FooterLink href="#" onClick={() => onNavigate?.('BAGGAGE')}>Baggage Info</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('FEES')}>Optional Services & Fees</FooterLink>
             </ul>
           </div>
         </div>
@@ -86,7 +92,27 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             >
               Terms of Service
             </a>
-            <a href="#" className="hover:text-black dark:hover:text-white transition-colors">Accessibility</a>
+            <a 
+              href="#" 
+              onClick={(e) => { e.preventDefault(); onNavigate?.('COOKIE_POLICY'); }} 
+              className="hover:text-black dark:hover:text-white transition-colors"
+            >
+              Cookie Policy
+            </a>
+            <a 
+              href="#" 
+              onClick={(e) => { e.preventDefault(); onNavigate?.('ACCESSIBILITY'); }}
+              className="hover:text-black dark:hover:text-white transition-colors"
+            >
+              Accessibility
+            </a>
+            <a 
+              href="#" 
+              onClick={(e) => { e.preventDefault(); onNavigate?.('SITEMAP'); }}
+              className="hover:text-black dark:hover:text-white transition-colors"
+            >
+              Sitemap
+            </a>
           </div>
           <div className="text-sm text-silver-400 dark:text-zinc-600">
             © {new Date().getFullYear()} Flopcoast Airways. All rights reserved.

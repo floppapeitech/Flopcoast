@@ -195,6 +195,12 @@ const InteractiveMap: React.FC = () => {
     }
   };
 
+  const uniqueCities = ROUTES.reduce<{x:number,y:number,name:string}[]>((acc, curr) => {
+     if (!acc.find(c => c.name === curr.from.name)) acc.push(curr.from);
+     if (!acc.find(c => c.name === curr.to.name)) acc.push(curr.to);
+     return acc;
+  }, []);
+
   return (
     <section className="py-20 px-6 md:px-12 max-w-[1920px] mx-auto overflow-hidden relative">
       <div className="text-center mb-12">
@@ -234,6 +240,9 @@ const InteractiveMap: React.FC = () => {
           {/* Routes */}
           {ROUTES.map((route) => {
             const isHovered = hoveredRoute === route.id;
+            const isConnectedToHoveredCity = hoveredCity && (route.from.name === hoveredCity || route.to.name === hoveredCity);
+            const isActive = isHovered || isConnectedToHoveredCity;
+
             return (
               <g key={route.id} 
                  onMouseEnter={() => setHoveredRoute(route.id)}
@@ -244,38 +253,40 @@ const InteractiveMap: React.FC = () => {
                 <path 
                   d={`M${route.from.x} ${route.from.y} Q ${(route.from.x + route.to.x)/2} ${(route.from.y + route.to.y)/2 - (Math.abs(route.from.x - route.to.x) > 300 ? -50 : 50)} ${route.to.x} ${route.to.y}`}
                   fill="none"
-                  stroke={isHovered ? 'currentColor' : 'currentColor'}
-                  strokeWidth={isHovered ? 2 : 0.5}
-                  className={`${isHovered ? 'text-black dark:text-white' : 'text-silver-400 dark:text-zinc-600'} transition-colors duration-500`}
-                  filter={isHovered ? "url(#glow)" : ""}
-                  strokeDasharray={isHovered ? "none" : "3,3"}
+                  stroke={isActive ? 'currentColor' : 'currentColor'}
+                  strokeWidth={isActive ? 2 : 0.5}
+                  className={`${isActive ? 'text-black dark:text-white' : 'text-silver-400 dark:text-zinc-600'} transition-colors duration-500`}
+                  filter={isActive ? "url(#glow)" : ""}
+                  strokeDasharray={isActive ? "none" : "3,3"}
                 />
               </g>
             );
           })}
 
           {/* Cities */}
-          {ROUTES.reduce<{x:number,y:number,name:string}[]>((acc, curr) => {
-             if (!acc.find(c => c.name === curr.from.name)) acc.push(curr.from);
-             if (!acc.find(c => c.name === curr.to.name)) acc.push(curr.to);
-             return acc;
-          }, []).map((city, idx) => (
-            <g key={idx} 
-               onMouseEnter={() => setHoveredCity(city.name)}
-               onMouseLeave={() => setHoveredCity(null)}
-               onClick={() => handleCityClick(city.name)}
-               className="cursor-pointer"
-            >
-              <circle cx={city.x} cy={city.y} r={hoveredCity === city.name ? 6 : 3} className="fill-black dark:fill-white transition-all duration-300" />
-              <circle cx={city.x} cy={city.y} r={12} className={`fill-black/10 dark:fill-white/10 ${hoveredCity === city.name ? 'opacity-100 scale-100' : 'opacity-0 scale-50'} transition-all duration-300`} />
-              
-              {/* Tooltip */}
-              <g className={`transition-opacity duration-300 ${hoveredCity === city.name ? 'opacity-100' : 'opacity-0'} pointer-events-none`}>
-                <rect x={city.x - 40} y={city.y - 40} width="80" height="24" rx="12" className="fill-white dark:fill-zinc-800 drop-shadow-xl" />
-                <text x={city.x} y={city.y - 24} textAnchor="middle" className="text-[9px] font-bold fill-black dark:fill-white uppercase tracking-wider">{city.name.split(' ')[0]}</text>
-              </g>
-            </g>
-          ))}
+          {uniqueCities.map((city, idx) => {
+            const isHovered = hoveredCity === city.name;
+            const isConnectedToHoveredRoute = hoveredRoute && ROUTES.find(r => r.id === hoveredRoute && (r.from.name === city.name || r.to.name === city.name));
+            const isActive = isHovered || isConnectedToHoveredRoute;
+
+            return (
+                <g key={idx} 
+                   onMouseEnter={() => setHoveredCity(city.name)}
+                   onMouseLeave={() => setHoveredCity(null)}
+                   onClick={() => handleCityClick(city.name)}
+                   className="cursor-pointer"
+                >
+                  <circle cx={city.x} cy={city.y} r={isActive ? 6 : 3} className={`fill-black dark:fill-white transition-all duration-300 ${isActive ? 'scale-110' : ''}`} />
+                  <circle cx={city.x} cy={city.y} r={12} className={`fill-black/10 dark:fill-white/10 ${isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-50'} transition-all duration-300`} />
+                  
+                  {/* Tooltip */}
+                  <g className={`transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'} pointer-events-none`}>
+                    <rect x={city.x - 40} y={city.y - 40} width="80" height="24" rx="12" className="fill-white dark:fill-zinc-800 drop-shadow-xl" />
+                    <text x={city.x} y={city.y - 24} textAnchor="middle" className="text-[9px] font-bold fill-black dark:fill-white uppercase tracking-wider">{city.name.split(' ')[0]}</text>
+                  </g>
+                </g>
+            );
+          })}
         </svg>
 
         {/* Overlay Info */}

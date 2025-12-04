@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { HeartHandshake, Baby, Dog, Accessibility, Stethoscope, ChevronDown, ChevronRight } from 'lucide-react';
+import { HeartHandshake, Baby, Dog, Accessibility, Stethoscope, ChevronDown, ChevronRight, Brain, Battery, ShieldAlert, BadgeInfo } from 'lucide-react';
 
 const SpecialServices: React.FC = () => {
   return (
@@ -34,6 +34,29 @@ const SpecialServices: React.FC = () => {
                     <div className="bg-silver-50 dark:bg-zinc-950 p-4 rounded-xl">
                         <h4 className="font-bold mb-1">Onboard Support</h4>
                         <p className="text-sm text-silver-500">Accessible lavatories and movable armrests are available on most aircraft. Our crew can assist with moving to/from the lavatory.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {/* Cognitive Disabilities - NEW */}
+        <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 md:p-12 border border-silver-200 dark:border-zinc-800 shadow-sm flex flex-col md:flex-row gap-8 items-start">
+            <div className="w-16 h-16 bg-silver-100 dark:bg-zinc-800 rounded-full flex items-center justify-center shrink-0 text-black dark:text-white">
+                <Brain size={32} />
+            </div>
+            <div className="flex-1 space-y-4">
+                <h3 className="text-3xl font-display font-bold">Cognitive & Sensory Support</h3>
+                <p className="text-silver-500 dark:text-silver-400 leading-relaxed">
+                    We recognize that travel can be overwhelming. We proudly support the Hidden Disabilities Sunflower Lanyard scheme to discreetly indicate that you may need extra time or assistance.
+                </p>
+                <div className="grid md:grid-cols-2 gap-4 pt-4">
+                    <div className="bg-silver-50 dark:bg-zinc-950 p-4 rounded-xl">
+                        <h4 className="font-bold mb-1">Sunflower Lanyards</h4>
+                        <p className="text-sm text-silver-500">Available at our check-in counters. Staff are trained to recognize and offer proactive help.</p>
+                    </div>
+                    <div className="bg-silver-50 dark:bg-zinc-950 p-4 rounded-xl">
+                        <h4 className="font-bold mb-1">Pre-Boarding</h4>
+                        <p className="text-sm text-silver-500">We offer early boarding to allow passengers with sensory sensitivities time to settle in before the cabin gets busy.</p>
                     </div>
                 </div>
             </div>
@@ -95,7 +118,22 @@ const SpecialServices: React.FC = () => {
                 <p className="text-silver-500 dark:text-silver-400 leading-relaxed">
                     If you have a medical condition or need special equipment (like oxygen), please contact us beforehand.
                 </p>
-                <div className="grid md:grid-cols-2 gap-4 pt-4">
+                
+                {/* Specific Medical Devices */}
+                <div className="bg-silver-50 dark:bg-zinc-950 p-6 rounded-2xl border border-silver-100 dark:border-zinc-800 mb-4">
+                    <div className="flex items-start gap-4">
+                        <Battery className="text-blue-500 shrink-0 mt-1" size={20} />
+                        <div>
+                            <h4 className="font-bold text-lg mb-2">Medical Devices (CPAP/POC)</h4>
+                            <p className="text-sm text-silver-500 leading-relaxed mb-2">
+                                Portable Oxygen Concentrators (POC) and CPAP machines are permitted on board. They must be FAA-approved and have enough battery life for 150% of the flight duration.
+                            </p>
+                            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Medical Certificate Required</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
                     <div className="bg-silver-50 dark:bg-zinc-950 p-4 rounded-xl">
                         <h4 className="font-bold mb-1">Expectant Mothers</h4>
                         <p className="text-sm text-silver-500">Travel permitted up to 36 weeks (single pregnancy) with a doctor's certificate after 28 weeks.</p>
@@ -105,6 +143,17 @@ const SpecialServices: React.FC = () => {
                         <p className="text-sm text-silver-500">We cater to most medical and religious dietary needs. Order special meals at least 24 hours before flight.</p>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        {/* Nut Policy Warning */}
+        <div className="bg-orange-50 dark:bg-orange-950/20 rounded-[2rem] p-8 border border-orange-100 dark:border-orange-900/30 flex items-start gap-6">
+            <ShieldAlert size={32} className="text-orange-600 shrink-0" />
+            <div>
+                <h3 className="text-xl font-bold text-orange-900 dark:text-orange-100 mb-2">Allergy Policy</h3>
+                <p className="text-sm text-orange-800 dark:text-orange-200/80 leading-relaxed">
+                    We cannot guarantee a nut-free environment. Peanuts and tree nuts may be served on our flights or brought on board by other passengers. If you have a severe allergy, please inform the cabin crew upon boarding so we can make an announcement requesting passengers refrain from opening nut products.
+                </p>
             </div>
         </div>
 

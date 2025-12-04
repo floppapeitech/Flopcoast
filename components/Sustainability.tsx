@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Leaf, Wind, Droplets, Recycle, ArrowRight, TreeDeciduous, X, Calculator, CheckCircle, BarChart3 } from 'lucide-react';
+import { Leaf, Wind, Droplets, Recycle, ArrowRight, TreeDeciduous, X, Calculator, CheckCircle, BarChart3, Sprout, Bird, Shirt } from 'lucide-react';
 
 const Sustainability: React.FC = () => {
   const [showCalculator, setShowCalculator] = useState(false);
@@ -72,7 +72,37 @@ const Sustainability: React.FC = () => {
           </div>
       </div>
 
-      <div className="bg-silver-50 dark:bg-zinc-950 rounded-[2.5rem] p-12 md:p-20 overflow-hidden relative">
+      {/* Expanded Initiatives */}
+      <div className="grid lg:grid-cols-2 gap-12 mb-20">
+          <div className="bg-silver-50 dark:bg-zinc-950 p-10 rounded-[2.5rem] border border-silver-200 dark:border-zinc-800 flex flex-col justify-center">
+              <div className="w-14 h-14 bg-white dark:bg-zinc-900 rounded-full flex items-center justify-center mb-6 text-black dark:text-white">
+                  <Bird size={28} />
+              </div>
+              <h3 className="text-3xl font-display font-bold mb-4">Wildlife Conservation</h3>
+              <p className="text-silver-500 dark:text-silver-400 leading-relaxed mb-6">
+                  Flopcoast has a zero-tolerance policy on the illegal transport of wildlife. We partner with United for Wildlife to train our staff to detect and report wildlife trafficking. We also sponsor the conservation of the endangered Floptropican Blue Parrot.
+              </p>
+              <div className="flex gap-4">
+                  <span className="px-4 py-2 bg-white dark:bg-zinc-900 rounded-full text-xs font-bold border border-silver-200 dark:border-zinc-800">Buckingham Palace Declaration Signatory</span>
+              </div>
+          </div>
+
+          <div className="bg-silver-50 dark:bg-zinc-950 p-10 rounded-[2.5rem] border border-silver-200 dark:border-zinc-800 flex flex-col justify-center">
+              <div className="w-14 h-14 bg-white dark:bg-zinc-900 rounded-full flex items-center justify-center mb-6 text-black dark:text-white">
+                  <Shirt size={28} />
+              </div>
+              <h3 className="text-3xl font-display font-bold mb-4">The Eco-Thread Initiative</h3>
+              <p className="text-silver-500 dark:text-silver-400 leading-relaxed mb-6">
+                  Old uniforms don't go to landfill. Our "Eco-Thread" project upcycles retired crew uniforms into carpets and insulation for our new aircraft cabins. To date, we have diverted over 5 tons of textile waste.
+              </p>
+              <div className="flex gap-4">
+                  <span className="px-4 py-2 bg-white dark:bg-zinc-900 rounded-full text-xs font-bold border border-silver-200 dark:border-zinc-800">Circular Economy Award 2023</span>
+              </div>
+          </div>
+      </div>
+
+      {/* Calculator Section */}
+      <div className="bg-silver-50 dark:bg-zinc-950 rounded-[2.5rem] p-12 md:p-20 overflow-hidden relative mb-20">
           <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
               <div>
                   <h2 className="text-4xl font-display font-bold mb-6">Offset Your Journey</h2>
@@ -113,6 +143,29 @@ const Sustainability: React.FC = () => {
                           <span className="text-silver-500">25%</span>
                       </div>
                   </div>
+              </div>
+          </div>
+      </div>
+
+      {/* 2024 Goals */}
+      <div className="bg-black dark:bg-white text-white dark:text-black rounded-[2.5rem] p-12 text-center">
+          <h2 className="text-3xl font-display font-bold mb-12">2024 Sustainability Goals</h2>
+          <div className="grid md:grid-cols-4 gap-8">
+              <div>
+                  <div className="text-4xl font-bold font-display mb-2 text-green-400 dark:text-green-600">20%</div>
+                  <div className="text-sm opacity-80 uppercase font-bold tracking-wide">Single Use Plastic Reduction</div>
+              </div>
+              <div>
+                  <div className="text-4xl font-bold font-display mb-2 text-green-400 dark:text-green-600">5%</div>
+                  <div className="text-sm opacity-80 uppercase font-bold tracking-wide">SAF Uplift at Hubs</div>
+              </div>
+              <div>
+                  <div className="text-4xl font-bold font-display mb-2 text-green-400 dark:text-green-600">10k</div>
+                  <div className="text-sm opacity-80 uppercase font-bold tracking-wide">Trees Planted</div>
+              </div>
+              <div>
+                  <div className="text-4xl font-bold font-display mb-2 text-green-400 dark:text-green-600">100%</div>
+                  <div className="text-sm opacity-80 uppercase font-bold tracking-wide">Electric Ground Vehicles</div>
               </div>
           </div>
       </div>

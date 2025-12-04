@@ -138,6 +138,7 @@ const OnboardExperience: React.FC<{onNavigate?: (view: ViewState) => void}> = ({
            </p>
         </div>
       </div>
+
     </div>
   );
 };

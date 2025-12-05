@@ -16,6 +16,8 @@ const Sitemap: React.FC<SitemapProps> = ({ onNavigate }) => {
               { label: 'Flight Deals', view: 'FLIGHT_DEALS' },
               { label: 'Route Map', view: 'HOME' }, // Using home for interactive map section
               { label: 'Travel Alerts', view: 'TRAVEL_ALERTS' },
+              { label: 'Travel Requirements', view: 'TRAVEL_REQUIREMENTS' },
+              { label: 'Bid for Upgrade', view: 'BID_UPGRADE' },
               { label: 'Optional Fees', view: 'FEES' },
           ]
       },
@@ -25,6 +27,7 @@ const Sitemap: React.FC<SitemapProps> = ({ onNavigate }) => {
               { label: 'Check-in Guide', view: 'CHECKIN' },
               { label: 'Baggage Information', view: 'BAGGAGE' },
               { label: 'Special Services', view: 'SPECIAL_SERVICES' },
+              { label: 'Health & Safety', view: 'HEALTH_SAFETY' },
               { label: 'Our Fleet', view: 'FLEET' },
               { label: 'Lounges', view: 'LOUNGES' },
               { label: 'Cargo Services', view: 'CARGO' },
@@ -69,6 +72,9 @@ const Sitemap: React.FC<SitemapProps> = ({ onNavigate }) => {
               { label: 'Privacy Policy', view: 'PRIVACY_POLICY' },
               { label: 'Terms of Service', view: 'TERMS_OF_SERVICE' },
               { label: 'Cookie Policy', view: 'COOKIE_POLICY' },
+              { label: 'Partner Cards', view: 'CREDIT_CARD' },
+              { label: 'Gift Cards', view: 'GIFT_CARDS' },
+              { label: 'Business Solutions', view: 'BUSINESS_SOLUTIONS' },
           ]
       },
   ];

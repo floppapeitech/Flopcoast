@@ -110,16 +110,6 @@ const OnboardExperience: React.FC<{onNavigate?: (view: ViewState) => void}> = ({
 
         <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 border border-silver-200 dark:border-zinc-800 hover:shadow-lg transition-all">
            <div className="w-16 h-16 bg-silver-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-6 text-black dark:text-white">
-              <ShoppingBag size={32} />
-           </div>
-           <h3 className="text-2xl font-display font-bold mb-4">Duty Free</h3>
-           <p className="text-silver-500 dark:text-silver-400 leading-relaxed">
-             Shop exclusive fragrances, jewelry, and gadgets from the comfort of your seat. Pre-order online to save 20%.
-           </p>
-        </div>
-
-        <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 border border-silver-200 dark:border-zinc-800 hover:shadow-lg transition-all">
-           <div className="w-16 h-16 bg-silver-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-6 text-black dark:text-white">
               <Coffee size={32} />
            </div>
            <h3 className="text-2xl font-display font-bold mb-4">Flopcoast Café</h3>

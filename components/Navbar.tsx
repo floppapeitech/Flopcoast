@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { User, ViewState } from '../types';
-import { Menu, X, Moon, Sun, LogOut, Search, ChevronDown, ChevronRight, Plane, Luggage, CheckCircle, User as UserIcon, Star, Armchair, Coffee, Crown, Tv, Wifi, HeartHandshake, Award, Coins, Ticket } from 'lucide-react';
+import { Menu, X, Moon, Sun, LogOut, Search, ChevronDown, ChevronRight, Plane, Luggage, CheckCircle, User as UserIcon, Star, Armchair, Coffee, Crown, Tv, Wifi, HeartHandshake, Award, Coins, Ticket, Globe } from 'lucide-react';
 import Logo from './Logo';
 
 interface NavbarProps {
@@ -95,7 +95,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <nav className="fixed top-4 left-3 right-3 md:top-6 md:left-8 md:right-8 z-50 flex flex-col items-center transition-all duration-300">
-      <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border border-silver-200 dark:border-zinc-800 rounded-full shadow-lg px-6 py-3 flex items-center justify-between w-full transition-all duration-300 relative">
+      <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border border-silver-200 dark:border-zinc-800 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.5)] px-6 py-3 flex items-center justify-between w-full transition-all duration-300 relative">
         
         {/* Logo */}
         <div 
@@ -118,7 +118,7 @@ const Navbar: React.FC<NavbarProps> = ({
           <div className="relative" ref={travelDropdownRef}>
             <button 
               onClick={() => setTravelDropdownOpen(!travelDropdownOpen)}
-              className={`flex items-center gap-1 text-sm font-medium transition-colors ${['ONBOARD', 'CHECKIN', 'BAGGAGE', 'FLEET', 'FIRST_CLASS', 'BUSINESS_CLASS', 'PREMIUM_ECONOMY', 'ECONOMY', 'ENTERTAINMENT', 'CONNECTIVITY', 'SPECIAL_SERVICES', 'LOUNGES'].includes(currentView) ? 'text-black dark:text-white font-bold' : 'text-silver-500 hover:text-black dark:hover:text-white'}`}
+              className={`flex items-center gap-1 text-sm font-medium transition-colors ${['ONBOARD', 'CHECKIN', 'BAGGAGE', 'FLEET', 'FIRST_CLASS', 'BUSINESS_CLASS', 'PREMIUM_ECONOMY', 'ECONOMY', 'ENTERTAINMENT', 'CONNECTIVITY', 'SPECIAL_SERVICES', 'LOUNGES', 'TRAVEL_REQUIREMENTS'].includes(currentView) ? 'text-black dark:text-white font-bold' : 'text-silver-500 hover:text-black dark:hover:text-white'}`}
             >
               Travel Info <ChevronDown size={14} className={`transition-transform duration-200 ${travelDropdownOpen ? 'rotate-180' : ''}`}/>
             </button>
@@ -126,7 +126,7 @@ const Navbar: React.FC<NavbarProps> = ({
             {travelDropdownOpen && (
               <div className="absolute top-full left-1/2 -translate-x-1/2 mt-6 w-[600px] bg-white dark:bg-zinc-900 rounded-[2rem] shadow-xl border border-silver-200 dark:border-zinc-800 p-6 animate-in fade-in slide-in-from-top-2 overflow-hidden z-50">
                 <div className="grid grid-cols-2 gap-8">
-                  {/* Column 1: Classes & Onboard Services */}
+                  {/* Column 1: Cabins & Service */}
                   <div className="space-y-4">
                      <h3 className="text-xs font-bold uppercase tracking-wider text-silver-400 pl-3">Cabins & Service</h3>
                      <div className="space-y-1">
@@ -161,6 +161,10 @@ const Navbar: React.FC<NavbarProps> = ({
                   <div className="space-y-4">
                      <h3 className="text-xs font-bold uppercase tracking-wider text-silver-400 pl-3">Guide & Features</h3>
                      <div className="space-y-1">
+                        <button onClick={() => { onNavigate('TRAVEL_REQUIREMENTS'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                            <Globe size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
+                            <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Visa & Health</span>
+                        </button>
                         <button onClick={() => { onNavigate('ENTERTAINMENT'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
                             <Tv size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
                             <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Entertainment</span>
@@ -184,11 +188,6 @@ const Navbar: React.FC<NavbarProps> = ({
                         <button onClick={() => { onNavigate('BAGGAGE'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
                             <Luggage size={16} className="text-silver-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
                             <span className="text-sm font-medium text-silver-600 dark:text-silver-300 group-hover:text-black dark:group-hover:text-white">Baggage Info</span>
-                        </button>
-                     </div>
-                     <div className="pt-2">
-                        <button onClick={() => { onNavigate('ONBOARD'); setTravelDropdownOpen(false); }} className="w-full py-2 bg-silver-100 dark:bg-zinc-800 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black rounded-lg text-xs font-bold uppercase tracking-wider transition-colors">
-                            View All Onboard
                         </button>
                      </div>
                   </div>
@@ -376,6 +375,7 @@ const Navbar: React.FC<NavbarProps> = ({
              
              <div className="p-3 mt-2 text-xs font-bold uppercase tracking-wider text-silver-400 border-t border-silver-100 dark:border-zinc-800">Travel Guide</div>
              <button onClick={() => { onNavigate('LOUNGES'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Coffee size={14}/> Lounges</button>
+             <button onClick={() => { onNavigate('TRAVEL_REQUIREMENTS'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Globe size={14}/> Visa & Health</button>
              <button onClick={() => { onNavigate('SPECIAL_SERVICES'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><HeartHandshake size={14}/> Special Services</button>
              <button onClick={() => { onNavigate('CHECKIN'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><CheckCircle size={14}/> Check-in Guide</button>
              <button onClick={() => { onNavigate('BAGGAGE'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Luggage size={14}/> Baggage Info</button>

@@ -54,6 +54,15 @@ import MobileApp from './components/MobileApp';
 import ContactUs from './components/ContactUs';
 import Destinations from './components/Destinations';
 import Sponsorships from './components/Sponsorships';
+import BusinessSolutions from './components/BusinessSolutions';
+import CreditCard from './components/CreditCard';
+import GiftCards from './components/GiftCards';
+import AirportGuide from './components/AirportGuide';
+import Procurement from './components/Procurement';
+import TarmacDelay from './components/TarmacDelay';
+import TravelRequirements from './components/TravelRequirements';
+import BidUpgrade from './components/BidUpgrade';
+import HealthSafety from './components/HealthSafety';
 import { User, ViewState, SearchCriteria } from './types';
 import { INITIAL_USERS } from './services/mockData';
 
@@ -308,6 +317,24 @@ const App: React.FC = () => {
         return <Destinations onNavigate={(view) => setCurrentView(view)} />;
       case 'SPONSORSHIPS':
         return <Sponsorships onNavigate={(view) => setCurrentView(view)} />;
+      case 'BUSINESS_SOLUTIONS':
+        return <BusinessSolutions onNavigate={(view) => setCurrentView(view)} />;
+      case 'CREDIT_CARD':
+        return <CreditCard onNavigate={(view) => setCurrentView(view)} />;
+      case 'GIFT_CARDS':
+        return <GiftCards onNavigate={(view) => setCurrentView(view)} />;
+      case 'AIRPORT_GUIDE':
+        return <AirportGuide onNavigate={(view) => setCurrentView(view)} />;
+      case 'PROCUREMENT':
+        return <Procurement onNavigate={(view) => setCurrentView(view)} />;
+      case 'TARMAC_DELAY':
+        return <TarmacDelay onNavigate={(view) => setCurrentView(view)} />;
+      case 'TRAVEL_REQUIREMENTS':
+        return <TravelRequirements onNavigate={(view) => setCurrentView(view)} />;
+      case 'BID_UPGRADE':
+        return <BidUpgrade onNavigate={(view) => setCurrentView(view)} />;
+      case 'HEALTH_SAFETY':
+        return <HealthSafety onNavigate={(view) => setCurrentView(view)} />;
       default:
         return <Hero onSearch={handleSearch} />;
     }

@@ -13,7 +13,8 @@ const CITIES = [
   'San Francisco (SFO)', 'Miami (MIA)', 'Las Vegas (LAS)', 'Atlanta (ATL)', 'Dallas (DFW)',
   'Denver (DEN)', 'Seattle (SEA)', 'Boston (BOS)', 'Orlando (MCO)', 'Montreal (YUL)', 
   'Mexico City (MEX)', 'Cancun (CUN)', 'San Diego (SAN)', 'Philadelphia (PHL)', 'Phoenix (PHX)',
-  'Houston (IAH)', 'Detroit (DTW)', 'Minneapolis (MSP)', 'Calgary (YYC)',
+  'Houston (IAH)', 'Detroit (DTW)', 'Minneapolis (MSP)', 'Calgary (YYC)', 'Portland (PDX)', 
+  'Salt Lake City (SLC)',
 
   // Europe
   'London (LHR)', 'Paris (CDG)', 'Frankfurt (FRA)', 'Amsterdam (AMS)', 'Madrid (MAD)',
@@ -21,18 +22,19 @@ const CITIES = [
   'Dublin (DUB)', 'Lisbon (LIS)', 'Vienna (VIE)', 'Copenhagen (CPH)', 'Milan (MXP)',
   'Istanbul (IST)', 'Athens (ATH)', 'Stockholm (ARN)', 'Manchester (MAN)', 'Brussels (BRU)',
   'Geneva (GVA)', 'Oslo (OSL)', 'Helsinki (HEL)', 'Warsaw (WAW)', 'Prague (PRG)', 'Budapest (BUD)',
-  'Edinburgh (EDI)', 'Nice (NCE)',
+  'Edinburgh (EDI)', 'Nice (NCE)', 'Reykjavik (KEF)', 'Malta (MLA)',
 
   // Asia & Middle East
   'Tokyo (HND)', 'Singapore (SIN)', 'Dubai (DXB)', 'Doha (DOH)', 'Hong Kong (HKG)',
   'Bangkok (BKK)', 'Seoul (ICN)', 'Beijing (PEK)', 'Shanghai (PVG)', 'Mumbai (BOM)',
   'Delhi (DEL)', 'Bangalore (BLR)', 'Kuala Lumpur (KUL)', 'Jakarta (CGK)', 'Manila (MNL)',
   'Taipei (TPE)', 'Abu Dhabi (AUH)', 'Osaka (KIX)', 'Ho Chi Minh City (SGN)', 'Hanoi (HAN)',
-  'Chennai (MAA)', 'Riyadh (RUH)', 'Tel Aviv (TLV)', 'Maldives (MLE)',
+  'Chennai (MAA)', 'Riyadh (RUH)', 'Maldives (MLE)', 'Kathmandu (KTM)',
+  'Colombo (CMB)', 'Muscat (MCT)',
 
   // Oceania
   'Sydney (SYD)', 'Melbourne (MEL)', 'Auckland (AKL)', 'Brisbane (BNE)', 'Perth (PER)',
-  'Christchurch (CHC)', 'Fiji (NAN)',
+  'Christchurch (CHC)', 'Fiji (NAN)', 'Adelaide (ADL)',
 
   // South America
   'Sao Paulo (GRU)', 'Buenos Aires (EZE)', 'Bogota (BOG)', 'Santiago (SCL)', 'Lima (LIM)',
@@ -41,7 +43,7 @@ const CITIES = [
 
   // Africa
   'Cairo (CAI)', 'Johannesburg (JNB)', 'Lagos (LOS)', 'Casablanca (CMN)', 'Nairobi (NBO)',
-  'Addis Ababa (ADD)', 'Cape Town (CPT)', 'Marrakech (RAK)',
+  'Addis Ababa (ADD)', 'Cape Town (CPT)', 'Marrakech (RAK)', 'Accra (ACC)', 'Dakar (DSS)',
 
   // Fictional
   'Queen Jiafei (JLU)', 'Floptopia (FLP)', 'Summeria (XSX)', 'Erendits (ERD)',

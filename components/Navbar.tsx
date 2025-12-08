@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { User, ViewState } from '../types';
-import { Menu, X, Moon, Sun, LogOut, Search, ChevronDown, ChevronRight, Plane, Luggage, CheckCircle, User as UserIcon, Star, Armchair, Coffee, Crown, Tv, Wifi, HeartHandshake, Award, Coins, Ticket, Globe } from 'lucide-react';
+import { Menu, X, Moon, Sun, LogOut, Search, ChevronDown, ChevronRight, Plane, Luggage, CheckCircle, User as UserIcon, Star, Armchair, Coffee, Crown, Tv, Wifi, HeartHandshake, Award, Coins, Ticket, Globe, Utensils } from 'lucide-react';
 import Logo from './Logo';
 
 interface NavbarProps {
@@ -74,8 +74,8 @@ const Navbar: React.FC<NavbarProps> = ({
         onNavigate('ENTERTAINMENT');
     } else if (query.includes('wifi') || query.includes('internet') || query.includes('connect')) {
         onNavigate('CONNECTIVITY');
-    } else if (query.includes('food') || query.includes('eat')) {
-        onNavigate('ONBOARD');
+    } else if (query.includes('food') || query.includes('eat') || query.includes('dining') || query.includes('meal')) {
+        onNavigate('DINING');
     } else if (query.includes('reward') || query.includes('points') || query.includes('mile')) {
         onNavigate('REWARDS');
     } else if (query.includes('insurance') || query.includes('policy')) {
@@ -118,7 +118,7 @@ const Navbar: React.FC<NavbarProps> = ({
           <div className="relative" ref={travelDropdownRef}>
             <button 
               onClick={() => setTravelDropdownOpen(!travelDropdownOpen)}
-              className={`flex items-center gap-1 text-sm font-medium transition-colors ${['ONBOARD', 'CHECKIN', 'BAGGAGE', 'FLEET', 'FIRST_CLASS', 'BUSINESS_CLASS', 'PREMIUM_ECONOMY', 'ECONOMY', 'ENTERTAINMENT', 'CONNECTIVITY', 'SPECIAL_SERVICES', 'LOUNGES', 'TRAVEL_REQUIREMENTS'].includes(currentView) ? 'text-black dark:text-white font-bold' : 'text-silver-500 hover:text-black dark:hover:text-white'}`}
+              className={`flex items-center gap-1 text-sm font-medium transition-colors ${['ONBOARD', 'CHECKIN', 'BAGGAGE', 'FLEET', 'FIRST_CLASS', 'BUSINESS_CLASS', 'PREMIUM_ECONOMY', 'ECONOMY', 'ENTERTAINMENT', 'CONNECTIVITY', 'SPECIAL_SERVICES', 'LOUNGES', 'TRAVEL_REQUIREMENTS', 'DINING'].includes(currentView) ? 'text-black dark:text-white font-bold' : 'text-silver-500 hover:text-black dark:hover:text-white'}`}
             >
               Travel Info <ChevronDown size={14} className={`transition-transform duration-200 ${travelDropdownOpen ? 'rotate-180' : ''}`}/>
             </button>
@@ -153,6 +153,13 @@ const Navbar: React.FC<NavbarProps> = ({
                             <Armchair size={14} />
                             </div>
                             <div className="text-sm font-bold text-black dark:text-white">Economy</div>
+                        </button>
+                        {/* New Dining Link */}
+                        <button onClick={() => { onNavigate('DINING'); setTravelDropdownOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 text-left group transition-colors">
+                            <div className="w-8 h-8 rounded-full bg-silver-100 dark:bg-zinc-800 text-black dark:text-white flex items-center justify-center shrink-0">
+                            <Utensils size={14} />
+                            </div>
+                            <div className="text-sm font-bold text-black dark:text-white">Inflight Dining</div>
                         </button>
                      </div>
                   </div>
@@ -370,6 +377,7 @@ const Navbar: React.FC<NavbarProps> = ({
              <button onClick={() => { onNavigate('BUSINESS_CLASS'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Star size={14}/> Business Class</button>
              <button onClick={() => { onNavigate('PREMIUM_ECONOMY'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Coffee size={14}/> Premium Economy</button>
              <button onClick={() => { onNavigate('ECONOMY'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Armchair size={14}/> Economy</button>
+             <button onClick={() => { onNavigate('DINING'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Utensils size={14}/> Inflight Dining</button>
              <button onClick={() => { onNavigate('ENTERTAINMENT'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Tv size={14}/> Entertainment</button>
              <button onClick={() => { onNavigate('CONNECTIVITY'); setIsMobileMenuOpen(false); }} className="w-full p-3 pl-6 text-left hover:bg-silver-100 dark:hover:bg-zinc-800 text-sm font-medium flex items-center gap-2"><Wifi size={14}/> Internet & Wi-Fi</button>
              

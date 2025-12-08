@@ -41,6 +41,8 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <FooterLink href="#" onClick={() => onNavigate?.('GIFT_CARDS')}>Gift Cards</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('MOBILE_APP')}>Mobile App</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('FLEET')}>Our Fleet</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('DINING')}>Inflight Dining</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('STUDENT_TRAVEL')}>Student Club</FooterLink>
             </ul>
           </div>
 
@@ -75,18 +77,19 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <FooterLink href="#" onClick={() => onNavigate?.('INSURANCE')}>Flopcoast Insurance</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('SPECIAL_SERVICES')}>Special Assistance</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('FEES')}>Optional Services & Fees</FooterLink>
+              <FooterLink href="#" onClick={() => onNavigate?.('FARE_TYPES')}>Fare Rules</FooterLink>
               <FooterLink href="#" onClick={() => onNavigate?.('TARMAC_DELAY')}>Tarmac Delay Plan</FooterLink>
             </ul>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-silver-200 dark:border-zinc-800 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="pt-8 border-t border-silver-200 dark:border-zinc-800 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
           <div className="flex items-center gap-2 text-silver-500 dark:text-silver-400 text-sm">
              <Globe size={16} />
              <span>English (US)</span>
           </div>
-          <div className="flex gap-8 text-sm text-silver-500 dark:text-silver-400 flex-wrap justify-center">
+          <div className="flex gap-4 md:gap-8 text-sm text-silver-500 dark:text-silver-400 flex-wrap justify-center">
             <a 
               href="#" 
               onClick={(e) => { e.preventDefault(); onNavigate?.('PRIVACY_POLICY'); }} 
@@ -123,8 +126,13 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               Sitemap
             </a>
           </div>
-          <div className="text-sm text-silver-400 dark:text-zinc-600">
-            © {new Date().getFullYear()} Flopcoast Airways. All rights reserved.
+          <div className="text-center md:text-right">
+            <div className="text-sm text-silver-400 dark:text-zinc-600">
+                © {new Date().getFullYear()} Flopcoast Airways. All rights reserved.
+            </div>
+            <div className="text-[10px] text-silver-300 dark:text-zinc-700 mt-1 uppercase tracking-wider font-medium">
+                Fictional Airline. For demonstration purposes only.
+            </div>
           </div>
         </div>
       </div>

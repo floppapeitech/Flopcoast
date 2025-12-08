@@ -71,36 +71,36 @@ const About: React.FC = () => {
                         <h2 className="text-2xl font-display font-bold mb-8 text-center">Our Heritage</h2>
                         <div className="space-y-8 relative before:absolute before:inset-y-0 before:left-4 md:before:left-1/2 before:w-px before:bg-silver-200 dark:before:bg-zinc-800 before:-z-10">
                             
-                            {/* 1990 */}
+                            {/* 1990-1991 */}
                             <div className="flex flex-col md:flex-row gap-8 items-center">
                                 <div className="md:w-1/2 md:text-right pl-12 md:pl-0">
                                     <h3 className="text-xl font-bold">1990: Origins</h3>
                                     <p className="text-silver-500 text-sm mt-1 leading-relaxed">
-                                        Founded as <span className="font-semibold text-black dark:text-white">FloptropicalAir</span> by a visionary group of Floptropicans led by Alejandra. Our mission was to modernize Floptropica's aviation industry. We launched operations with a single Boeing 737-200.
+                                        Founded as <span className="font-semibold text-black dark:text-white">FloptropicalAir</span> by a group of Floptropicans led by Alejandra to modernize the nation's aviation. We launched with a Boeing 737-200, beginning charter operations in November 1990 and scheduled flights in March 1991.
                                     </p>
                                 </div>
                                 <div className="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-black dark:bg-white border-4 border-white dark:border-black shadow-lg z-10"></div>
                                 <div className="md:w-1/2 hidden md:block"></div>
                             </div>
 
-                            {/* 1995-1997 */}
+                            {/* 1995-2000 */}
                             <div className="flex flex-col md:flex-row gap-8 items-center">
                                 <div className="md:w-1/2 hidden md:block"></div>
                                 <div className="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-silver-300 dark:bg-zinc-700 border-4 border-white dark:border-black shadow-lg z-10"></div>
                                 <div className="md:w-1/2 pl-12 md:pl-0">
-                                    <h3 className="text-xl font-bold">1995-1997: Identity</h3>
+                                    <h3 className="text-xl font-bold">1995-2000: Expansion</h3>
                                     <p className="text-silver-500 text-sm mt-1 leading-relaxed">
-                                        The company was renamed <span className="font-semibold text-black dark:text-white">Flopcoast Airways</span> to reflect our international ambitions. The original FloptropicalAir branding was officially phased out in 1997.
+                                        Renamed to <span className="font-semibold text-black dark:text-white">Flopcoast Airways</span> in 1995; the old branding was phased out by 1997. In 2000, we launched our first long-haul routes utilizing the Airbus A300-600.
                                     </p>
                                 </div>
                             </div>
 
-                            {/* 2000 */}
+                            {/* 2008-2013 */}
                             <div className="flex flex-col md:flex-row gap-8 items-center">
                                 <div className="md:w-1/2 md:text-right pl-12 md:pl-0">
-                                    <h3 className="text-xl font-bold">2000: Going Global</h3>
+                                    <h3 className="text-xl font-bold">2008-2013: Transition</h3>
                                     <p className="text-silver-500 text-sm mt-1 leading-relaxed">
-                                        We launched our first long-haul routes utilizing the Airbus A300-600, connecting Potaxiene to the world stage.
+                                        Alejandra stepped down as CEO in 2008, replaced by co-founder Marcus Potaxie. Following economic challenges in 2009, routes were cut. In 2013, Oliver became CEO as Marcus departed for Floptropica Airports Management Co.
                                     </p>
                                 </div>
                                 <div className="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-silver-300 dark:bg-zinc-700 border-4 border-white dark:border-black shadow-lg z-10"></div>
@@ -114,7 +114,7 @@ const About: React.FC = () => {
                                 <div className="md:w-1/2 pl-12 md:pl-0">
                                     <h3 className="text-xl font-bold">2022: Turbulence</h3>
                                     <p className="text-silver-500 text-sm mt-1 leading-relaxed">
-                                        In April, Flopcoast Airways and subsidiary FlopAirways filed for bankruptcy protection. This difficult period allowed us to restructure, streamline our fleet, and refocus our strategy.
+                                        In April, Flopcoast Airways and subsidiary FlopAirways filed for bankruptcy protection. The airline underwent a major restructuring, streamlining the fleet and reducing the workforce to ensure survival.
                                     </p>
                                 </div>
                             </div>
@@ -122,9 +122,9 @@ const About: React.FC = () => {
                             {/* 2023 */}
                             <div className="flex flex-col md:flex-row gap-8 items-center">
                                 <div className="md:w-1/2 md:text-right pl-12 md:pl-0">
-                                    <h3 className="text-xl font-bold">2023: The Renaissance</h3>
+                                    <h3 className="text-xl font-bold">2023: The Return</h3>
                                     <p className="text-silver-500 text-sm mt-1 leading-relaxed">
-                                        We successfully exited bankruptcy in May. In a historic move, our original founder <span className="font-bold text-black dark:text-white">Alejandra</span> returned as CEO in April, restoring trust following the departure of former CEO Sinja. By December, the <span className="font-bold">Flopcoast Aviation Group</span> was formed as a new holding company.
+                                        We exited bankruptcy in May. In a historic move, <span className="font-bold text-black dark:text-white">Alejandra</span> returned as CEO in April, replacing Oliver. Marcus Potaxie also returned as COO. By December, the <span className="font-bold">Flopcoast Aviation Group</span> was formed.
                                     </p>
                                 </div>
                                 <div className="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-black dark:bg-white border-4 border-white dark:border-black shadow-lg z-10"></div>
@@ -138,7 +138,7 @@ const About: React.FC = () => {
                                 <div className="md:w-1/2 pl-12 md:pl-0">
                                     <h3 className="text-xl font-bold">2024: A New Era</h3>
                                     <p className="text-silver-500 text-sm mt-1 leading-relaxed">
-                                        85% of our parent company was acquired by <span className="font-bold">The Floptropican Group</span>, securing our financial future while founders retained operational control. We pivoted to become a pure full-service medium/long-haul carrier, transferring short-haul routes to the new <span className="italic">Flopcoast Airways Regional</span> division. In July, our loyalty program was reborn as <span className="font-bold">Flopcoast Rewards</span>.
+                                        Acquired by <span className="font-bold">The Floptropican Group</span> (85%) with founders retaining control. In March, we pivoted to a full-service medium/long-haul carrier, transferring short-haul to <span className="italic">Flopcoast Airways Regional</span>. Loyalty program rebranded to <span className="font-bold">Flopcoast Rewards</span> in July.
                                     </p>
                                 </div>
                             </div>

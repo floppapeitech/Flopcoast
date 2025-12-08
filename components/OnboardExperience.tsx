@@ -98,14 +98,21 @@ const OnboardExperience: React.FC<{onNavigate?: (view: ViewState) => void}> = ({
            </div>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 border border-silver-200 dark:border-zinc-800 hover:shadow-lg transition-all">
-           <div className="w-16 h-16 bg-silver-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-6 text-black dark:text-white">
+        {/* Dining Card Link - Updated */}
+        <div 
+            onClick={() => onNavigate?.('DINING')}
+            className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 border border-silver-200 dark:border-zinc-800 hover:shadow-lg transition-all cursor-pointer group"
+        >
+           <div className="w-16 h-16 bg-silver-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-6 text-black dark:text-white group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors">
               <Utensils size={32} />
            </div>
            <h3 className="text-2xl font-display font-bold mb-4">Gourmet Dining</h3>
-           <p className="text-silver-500 dark:text-silver-400 leading-relaxed">
+           <p className="text-silver-500 dark:text-silver-400 leading-relaxed mb-4">
              Savor locally sourced ingredients inspired by the destinations we serve. Complimentary meals on all international flights.
            </p>
+           <div className="flex items-center gap-2 text-sm font-bold group-hover:gap-3 transition-all">
+                View Menus <ArrowRight size={14} />
+           </div>
         </div>
 
         <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 border border-silver-200 dark:border-zinc-800 hover:shadow-lg transition-all">

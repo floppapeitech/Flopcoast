@@ -63,6 +63,9 @@ import TarmacDelay from './components/TarmacDelay';
 import TravelRequirements from './components/TravelRequirements';
 import BidUpgrade from './components/BidUpgrade';
 import HealthSafety from './components/HealthSafety';
+import InflightDining from './components/InflightDining';
+import FareTypes from './components/FareTypes';
+import StudentTravel from './components/StudentTravel';
 import { User, ViewState, SearchCriteria } from './types';
 import { INITIAL_USERS } from './services/mockData';
 
@@ -335,6 +338,12 @@ const App: React.FC = () => {
         return <BidUpgrade onNavigate={(view) => setCurrentView(view)} />;
       case 'HEALTH_SAFETY':
         return <HealthSafety onNavigate={(view) => setCurrentView(view)} />;
+      case 'DINING':
+        return <InflightDining onNavigate={(view) => setCurrentView(view)} />;
+      case 'FARE_TYPES':
+        return <FareTypes onNavigate={(view) => setCurrentView(view)} />;
+      case 'STUDENT_TRAVEL':
+        return <StudentTravel onNavigate={(view) => setCurrentView(view)} />;
       default:
         return <Hero onSearch={handleSearch} />;
     }

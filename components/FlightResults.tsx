@@ -462,6 +462,7 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack, user })
                          <div className="h-12 flex items-center">Price</div>
                          <div className="h-16 flex items-center">Travel Time</div>
                          <div className="h-12 flex items-center">Schedule</div>
+                         <div className="h-12 flex items-center">Stops</div>
                          <div className="h-12 flex items-center">Cabin Class</div>
                          <div className="h-12 flex items-center">Aircraft</div>
                          <div className="h-20 flex items-center">Baggage</div>
@@ -493,6 +494,7 @@ const FlightResults: React.FC<FlightResultsProps> = ({ criteria, onBack, user })
                              </div>
 
                              <div className="h-12 flex items-center text-sm">{flight.departureTime} - {flight.arrivalTime}</div>
+                             <div className="h-12 flex items-center text-sm">{flight.stops === 0 ? 'Non-stop' : `${flight.stops} stop${flight.stops > 1 ? 's' : ''}`}</div>
                              <div className="h-12 flex items-center text-sm font-bold">{flight.cabinClass}</div>
                              <div className="h-12 flex items-center text-sm">{flight.aircraft}</div>
                              <div className="h-20 flex items-center text-xs leading-relaxed">{flight.baggage}</div>

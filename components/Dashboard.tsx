@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { User, Flight } from '../types';
-import { Plane, Calendar, MapPin, ChevronDown, ChevronUp, Award, Bell, X, Terminal, Wifi, Utensils, Tv, Luggage, Hash, Settings, ArrowRight, Check } from 'lucide-react';
+import { Plane, Calendar, MapPin, ChevronDown, ChevronUp, Award, Bell, X, Terminal, Wifi, Utensils, Tv, Luggage, Hash, Settings, ArrowRight, Check, AlertCircle, MoreHorizontal, Trash2 } from 'lucide-react';
 
 interface DashboardProps {
   user: User;
@@ -124,21 +124,36 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onNavigate }) => {
 const FlightCard: React.FC<{ flight: Flight }> = ({ flight }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isAlertsOpen, setIsAlertsOpen] = useState(false);
+  const [isManageOpen, setIsManageOpen] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [isCancelled, setIsCancelled] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  
   const [alerts, setAlerts] = useState(flight.alerts || { priceChange: false, statusUpdate: false });
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saved'>('idle');
 
   const toggleAlert = (key: keyof typeof alerts) => {
     setAlerts(prev => ({ ...prev, [key]: !prev[key] }));
-    // Show visual confirmation
     setSaveStatus('saved');
     setTimeout(() => setSaveStatus('idle'), 2000);
   };
 
-  const hasWifi = true; // Default for mock
+  const handleCancelConfirm = () => {
+      // Simulate API call
+      setTimeout(() => {
+          setIsCancelling(false);
+          setIsCancelled(true);
+      }, 500);
+  };
+
+  if (isCancelled) return null;
+
+  const hasWifi = true;
   const hasTV = true;
   const mealType = flight.class === 'Business' || flight.class === 'First Class' ? 'Gourmet Dining' : 'Complimentary Meal';
 
   return (
+    <>
     <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-silver-200 dark:border-zinc-800 overflow-visible transition-all duration-300 hover:shadow-md relative group">
       {/* Main Row */}
       <div className="p-6 md:p-8 relative z-10 bg-white dark:bg-zinc-900 rounded-[2rem]">
@@ -218,7 +233,6 @@ const FlightCard: React.FC<{ flight: Flight }> = ({ flight }) => {
                          </label>
                       </div>
                       
-                      {/* Visual Save Confirmation */}
                       {saveStatus === 'saved' && (
                          <div className="mt-3 py-1.5 px-3 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg text-xs font-bold flex items-center justify-center gap-1 animate-in fade-in zoom-in">
                             <Check size={12} /> Preferences Saved
@@ -239,7 +253,7 @@ const FlightCard: React.FC<{ flight: Flight }> = ({ flight }) => {
         </div>
       </div>
 
-      {/* Expanded Details - Slides down under */}
+      {/* Expanded Details */}
       <div 
         className={`bg-silver-50 dark:bg-zinc-950/50 border-t border-silver-200 dark:border-zinc-800 transition-all duration-500 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}
         style={{ borderRadius: '0 0 2rem 2rem' }}
@@ -323,17 +337,93 @@ const FlightCard: React.FC<{ flight: Flight }> = ({ flight }) => {
             </div>
 
             {/* Actions Footer */}
-            <div className="flex gap-3 justify-end">
+            <div className="flex gap-3 justify-end relative">
                 <button className="px-6 py-2 rounded-full border border-silver-200 dark:border-zinc-700 text-sm font-bold hover:bg-silver-100 dark:hover:bg-zinc-800 transition-colors">
                     Change Seat
                 </button>
-                <button className="px-6 py-2 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-bold hover:opacity-90 transition-opacity">
-                    Manage Booking
-                </button>
+                <div className="relative">
+                    <button 
+                        onClick={() => setIsManageOpen(!isManageOpen)}
+                        className="px-6 py-2 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-bold hover:opacity-90 transition-opacity flex items-center gap-2"
+                    >
+                        Manage Booking <MoreHorizontal size={14} />
+                    </button>
+                    {isManageOpen && (
+                        <div className="absolute bottom-full right-0 mb-2 w-48 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-silver-200 dark:border-zinc-800 p-1 z-20 animate-in fade-in zoom-in-95">
+                            <button className="w-full text-left px-4 py-2 rounded-lg text-sm font-medium hover:bg-silver-50 dark:hover:bg-zinc-800 transition-colors">
+                                Change Flight
+                            </button>
+                            <button className="w-full text-left px-4 py-2 rounded-lg text-sm font-medium hover:bg-silver-50 dark:hover:bg-zinc-800 transition-colors">
+                                Add Baggage
+                            </button>
+                            <div className="h-px bg-silver-100 dark:bg-zinc-800 my-1"></div>
+                            <button 
+                                onClick={() => { setIsManageOpen(false); setIsCancelling(true); }}
+                                className="w-full text-left px-4 py-2 rounded-lg text-sm font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2"
+                            >
+                                <Trash2 size={14} /> Cancel Flight
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
       </div>
     </div>
+
+    {/* Cancellation Modal */}
+    {isCancelling && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+            <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2rem] max-w-md w-full border border-silver-200 dark:border-zinc-800 shadow-2xl relative animate-in zoom-in-95 slide-in-from-bottom-4">
+                <button onClick={() => setIsCancelling(false)} className="absolute top-4 right-4 p-2 hover:bg-silver-100 dark:hover:bg-zinc-800 rounded-full"><X size={18}/></button>
+                
+                <div className="flex items-center gap-3 mb-4 text-red-600">
+                    <AlertCircle size={32} />
+                    <h3 className="text-2xl font-bold font-display">Cancel Flight?</h3>
+                </div>
+                
+                <p className="text-silver-500 mb-6 text-sm leading-relaxed">
+                    Are you sure you want to cancel your flight to <strong>{flight.destination}</strong>? This action cannot be undone. Please tell us why you are cancelling:
+                </p>
+                
+                <div className="space-y-3 mb-8">
+                    {['Changed Plans', 'Medical Emergency', 'Found Better Price', 'Other'].map(reason => (
+                        <label key={reason} className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${cancelReason === reason ? 'border-red-500 bg-red-50 dark:bg-red-900/10' : 'border-silver-200 dark:border-zinc-800 hover:bg-silver-50 dark:hover:bg-zinc-800'}`}>
+                            <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${cancelReason === reason ? 'border-red-500' : 'border-silver-300'}`}>
+                                {cancelReason === reason && <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>}
+                            </div>
+                            <input 
+                                type="radio" 
+                                name="cancelReason" 
+                                value={reason}
+                                checked={cancelReason === reason}
+                                onChange={(e) => setCancelReason(e.target.value)}
+                                className="hidden"
+                            />
+                            <span className={`text-sm font-bold ${cancelReason === reason ? 'text-red-700 dark:text-red-400' : 'text-silver-600 dark:text-silver-300'}`}>{reason}</span>
+                        </label>
+                    ))}
+                </div>
+
+                <div className="flex gap-4">
+                    <button 
+                        onClick={() => setIsCancelling(false)} 
+                        className="flex-1 py-3 font-bold text-sm border border-silver-200 dark:border-zinc-700 rounded-xl hover:bg-silver-50 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                        Keep Flight
+                    </button>
+                    <button 
+                        onClick={handleCancelConfirm} 
+                        disabled={!cancelReason} 
+                        className="flex-1 py-3 font-bold text-sm bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-red-500/20 transition-all"
+                    >
+                        Confirm Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    )}
+    </>
   );
 };
 

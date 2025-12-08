@@ -107,6 +107,27 @@ const Lounges: React.FC<{onNavigate: (view: ViewState) => void}> = ({onNavigate}
                   <div className="flex justify-between items-center py-3 border-b border-silver-100 dark:border-zinc-800">
                       <div className="flex items-center gap-3">
                           <MapPin size={18} className="text-silver-400" />
+                          <span className="font-bold">Queen Jiafei (JLU)</span>
+                      </div>
+                      <span className="text-sm text-silver-500">The Crown Lounge, Royal Terminal</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 border-b border-silver-100 dark:border-zinc-800">
+                      <div className="flex items-center gap-3">
+                          <MapPin size={18} className="text-silver-400" />
+                          <span className="font-bold">Floptopia (PFFT)</span>
+                      </div>
+                      <span className="text-sm text-silver-500">Cyber Deck, Terminal Alpha</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 border-b border-silver-100 dark:border-zinc-800">
+                      <div className="flex items-center gap-3">
+                          <MapPin size={18} className="text-silver-400" />
+                          <span className="font-bold">Jilu City (JLC)</span>
+                      </div>
+                      <span className="text-sm text-silver-500">Après-Ski Lounge, Main Chalet</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 border-b border-silver-100 dark:border-zinc-800">
+                      <div className="flex items-center gap-3">
+                          <MapPin size={18} className="text-silver-400" />
                           <span className="font-bold">Singapore (SIN)</span>
                       </div>
                       <span className="text-sm text-silver-500">Terminal 3, Level 3</span>
@@ -119,7 +140,7 @@ const Lounges: React.FC<{onNavigate: (view: ViewState) => void}> = ({onNavigate}
                       <span className="text-sm text-silver-500">Tom Bradley Int'l, Level 6</span>
                   </div>
               </div>
-              <button className="mt-6 text-sm font-bold underline decoration-2 underline-offset-4">View All 24 Locations</button>
+              <button className="mt-6 text-sm font-bold underline decoration-2 underline-offset-4">View All Locations</button>
           </div>
       </div>
 
